@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.view.View;
 
 import com.example.userapp.activity.ActivityController;
 import com.example.userapp.activity.login.LoginActivity;
@@ -36,8 +37,15 @@ public class RegisterController extends ActivityController implements UserDataCh
 
     }
 
-    void onRegister() {   //Start UI
-        UserWithPassword userWithPassword = new UserWithPassword();
+    void onRegister()
+    {
+        if(checkFields()) {
+            registerActivity.progressIndicator.setVisibility(View.VISIBLE);
+            register(userWithPasswordFromFields());}
+        else registerActivity.informText.setText("Polja ne smiju biti prazna");
+    }
+    void register(UserWithPassword userWithPassword) {   //Start UI
+
 
 
         Handler handler = new Handler(handlerThread.getLooper());
@@ -53,11 +61,12 @@ public class RegisterController extends ActivityController implements UserDataCh
                 desilaSeGreska = true;
             } finally {
                 if (isRegistard) {
-                    //Uspjesno registrovan
+                    registerActivity.runOnUiThread(()->registerActivity.informText.setText("Uspješno registrovan!"));
                 }
-                else if(!desilaSeGreska){  //neuspjesno registrovan
+                else if(!desilaSeGreska){
+                    registerActivity.runOnUiThread(()->registerActivity.informText.setText("Email adresa je zauzeta"));
                      }
-                else { //error
+                else { registerActivity.runOnUiThread(()->registerActivity.informText.setText("Desila se greška pri povezivanju"));
                      }
             }
 
@@ -65,18 +74,46 @@ public class RegisterController extends ActivityController implements UserDataCh
                 if (isLoggedIn) {
                     try {
                         this.userDataModel.updateUser(this.registerModel.loadUser());
+                        registerActivity.runOnUiThread(()-> registerActivity.progressIndicator.setVisibility(View.INVISIBLE));
                     } catch (IOException | JSONException e) {
-                        //Ovdje na Login i unsubscribuj
+
                         this.userDataModel.unsubscribeToDataChange(this);
                         this.registerActivity.runOnUiThread(()-> {
-                            this.registerActivity.startActivity(new Intent(this.registerActivity, NoPictureActivity.class));
+                            registerActivity.progressIndicator.setVisibility(View.INVISIBLE);
+                            this.registerActivity.startActivity(new Intent(this.registerActivity, LoginActivity.class));
                             this.registerActivity.finish();
                         });
                     }
                 }
+                else registerActivity.runOnUiThread(()-> registerActivity.progressIndicator.setVisibility(View.INVISIBLE));
 
         });
     }
+
+    private boolean checkFields()
+    {
+        if(registerActivity.name.getText().toString()==null||registerActivity.name.getText().toString().isEmpty())
+            return false;
+        if(registerActivity.lastname.getText().toString()==null||registerActivity.lastname.getText().toString().isEmpty())
+            return false;
+        if(registerActivity.password.getText().toString()==null||registerActivity.password.getText().toString().isEmpty())
+            return false;
+        if(registerActivity.email.getText().toString()==null||registerActivity.email.getText().toString().isEmpty())
+            return false;
+        return true;
+    }
+
+    private UserWithPassword userWithPasswordFromFields()
+    {
+        UserWithPassword userWithPassword = new UserWithPassword();
+        userWithPassword.setLastName(registerActivity.lastname.getText().toString());
+        userWithPassword.setFirstName(registerActivity.name.getText().toString());
+        userWithPassword.setPasswordHash(registerActivity.password.getText().toString());
+        userWithPassword.setEmail(registerActivity.email.getText().toString());
+
+        return userWithPassword;
+    }
+
 
     @Override
     public void onUserDataChanged(User user, HashSet<UserTicket> userTickets, HashSet<TicketRequestResponse> ticketRequestResponses, HashSet<TicketRequest> unprocessedTicketRequest, Bitmap userProfilePicture) {
