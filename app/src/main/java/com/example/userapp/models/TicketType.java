@@ -3,15 +3,15 @@ package com.example.userapp.models;
 import java.math.BigDecimal;
 
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 @Getter
 @Setter
 @NoArgsConstructor
-
+@EqualsAndHashCode
 
 
 public class TicketType {

@@ -39,7 +39,9 @@ public class ApiTest {
         Integer registerResult = api.registerUser(loginData).execute().body();
         String Token = api.loginUser(loginData).execute().body();
         TokenManager.setToken(Token);
-        User user = api.getUser(TokenManager.getInstance().getId(), TokenManager.bearer() + TokenManager.getInstance().getToken()).execute().body();
+        User user;
+        if("USER".equals(TokenManager.getInstance().getRole()))
+         user = api.getUser(TokenManager.getInstance().getId(), TokenManager.bearer() + TokenManager.getInstance().getToken()).execute().body();
 
         System.out.println();
     }
@@ -60,8 +62,8 @@ public class ApiTest {
 
         RequestBody requestFile =
                 RequestBody.create(
-                        MediaType.parse("image/jpg"),
-                        file
+                        MediaType.parse("image/jpg"), new byte [5]
+
                 );
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("profile_pic", file.getName(), requestFile);

@@ -6,4 +6,8 @@
     </style>
 
     <style name="Theme.UserApp" parent="Base.Theme.UserApp" />
+    <style name="ShapeAppearanceOverlay.App.CornerCut" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>
