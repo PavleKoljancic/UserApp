@@ -1,4 +1,4 @@
-package com.example.userapp.userdata;
+package com.example.userapp.datamodel.user;
 
 import android.graphics.Bitmap;
 

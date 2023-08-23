@@ -4,7 +4,6 @@ package com.example.userapp.activity.nopicture;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.view.View;
 
 import com.canhub.cropper.CropImageContractOptions;
@@ -14,8 +13,7 @@ import com.example.userapp.models.TicketRequest;
 import com.example.userapp.models.TicketRequestResponse;
 import com.example.userapp.models.User;
 import com.example.userapp.models.UserTicket;
-import com.example.userapp.userdata.UserDataChangeSubscriber;
-import com.example.userapp.userdata.UserDataModel;
+import com.example.userapp.datamodel.user.UserDataChangeSubscriber;
 
 import org.json.JSONException;
 
@@ -56,7 +54,7 @@ class NoPictureController extends ActivityController implements UserDataChangeSu
         noPictureActivity.infoText.setVisibility(View.VISIBLE);
         noPictureActivity.uploadButton.setVisibility(View.VISIBLE);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        noPictureActivity.cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        noPictureActivity.cropped.compress(Bitmap.CompressFormat.JPEG, 50, stream);
         this.noPictureModel.setPictureBytes(stream.toByteArray());
     }
 

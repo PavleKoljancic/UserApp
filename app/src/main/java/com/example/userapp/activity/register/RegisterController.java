@@ -3,7 +3,6 @@ package com.example.userapp.activity.register;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.view.View;
 
 import com.example.userapp.activity.ActivityController;
@@ -16,8 +15,7 @@ import com.example.userapp.models.TicketRequestResponse;
 import com.example.userapp.models.User;
 import com.example.userapp.models.UserTicket;
 import com.example.userapp.models.UserWithPassword;
-import com.example.userapp.userdata.UserDataChangeSubscriber;
-import com.example.userapp.userdata.UserDataModel;
+import com.example.userapp.datamodel.user.UserDataChangeSubscriber;
 
 import org.json.JSONException;
 

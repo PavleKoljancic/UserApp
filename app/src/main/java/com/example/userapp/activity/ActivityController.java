@@ -2,7 +2,7 @@ package com.example.userapp.activity;
 
 import android.os.HandlerThread;
 
-import com.example.userapp.userdata.UserDataModel;
+import com.example.userapp.datamodel.user.UserDataModel;
 
 public abstract class ActivityController {
     protected HandlerThread handlerThread;

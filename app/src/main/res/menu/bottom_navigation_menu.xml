@@ -1,0 +1,29 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/request"
+        android:enabled="true"
+        android:icon="@drawable/request"
+        android:title="Zahtjevi"/>
+    <item
+        android:id="@+id/new_request"
+        android:enabled="true"
+        android:icon="@drawable/ticket"
+        android:title="Karate"/>
+    <item
+        android:id="@+id/profile"
+        android:enabled="true"
+        android:icon="@drawable/profile"
+        android:title="Profil"/>
+    <item
+        android:id="@+id/documents"
+        android:enabled="true"
+        android:icon="@drawable/document"
+        android:title="Dokumenti"/>
+
+    <item
+        android:id="@+id/settings"
+        android:enabled="true"
+        android:icon="@drawable/settings"
+        android:title="Podešavanja"/>
+</menu>

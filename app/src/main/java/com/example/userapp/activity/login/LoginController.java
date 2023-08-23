@@ -2,14 +2,12 @@ package com.example.userapp.activity.login;
 
 import android.content.Intent;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.view.View;
 
 import com.example.userapp.activity.ActivityController;
 import com.example.userapp.activity.main.MainActivity;
 import com.example.userapp.activity.nopicture.NoPictureActivity;
 import com.example.userapp.activity.register.RegisterActivity;
-import com.example.userapp.userdata.UserDataModel;
 
 import org.json.JSONException;
 
