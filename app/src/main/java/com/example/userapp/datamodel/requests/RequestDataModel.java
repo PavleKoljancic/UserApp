@@ -47,7 +47,7 @@ public class RequestDataModel {
     }
 
     public void setAllTickets(List<TicketType> allTickets) {
-        if(allTickets!=null&&allTickets.size()>0)
+        if(allTickets!=null)
         {
             this.allTickets.clear();
             this.allTickets.addAll(allTickets);
@@ -59,7 +59,7 @@ public class RequestDataModel {
     }
 
     public void setUserTicketRequest(List<TicketRequest> userTicketRequest) {
-        if(userTicketRequest!=null&&userTicketRequest.size()>0)
+        if(userTicketRequest!=null)
         {
             this.userTicketRequest.clear();
             this.userTicketRequest.addAll(userTicketRequest);
@@ -71,7 +71,7 @@ public class RequestDataModel {
     }
 
     public void setUserTicketResponses(List<TicketRequestResponse> userTicketResponses) {
-        if(userTicketResponses!=null&&userTicketResponses.size()>0)
+        if(userTicketResponses!=null)
         {
             this.userTicketResponses.clear();
             this.userTicketResponses.addAll(userTicketResponses);

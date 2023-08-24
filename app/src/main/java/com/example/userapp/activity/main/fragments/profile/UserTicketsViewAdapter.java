@@ -51,7 +51,7 @@ public class UserTicketsViewAdapter extends RecyclerView.Adapter< UserTicketsVie
         StringBuilder stringBuilder = new StringBuilder();
         if("periodic".equals(type))
             stringBuilder.append("Periodična karta");
-        else holder.ticketType.setText("Količinska karta");
+        else stringBuilder.append("Količinska karta");
 
 
         if(userTickets.get(position).getUsage()!=null)

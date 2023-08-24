@@ -9,6 +9,7 @@ import com.example.userapp.activity.main.MainActivity;
 import com.example.userapp.activity.nopicture.NoPictureActivity;
 import com.example.userapp.activity.register.RegisterActivity;
 
+
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -21,8 +22,9 @@ class LoginController  extends ActivityController {
     {
         super("Login Model Handler Thread");
         this.loginActivity = loginActivity;
-        this.loginModel = new LoginModel();
 
+        Handler handler = new Handler(handlerThread.getLooper());
+        this.loginModel = new LoginModel();
     }
 
     public void onLoginClicked()

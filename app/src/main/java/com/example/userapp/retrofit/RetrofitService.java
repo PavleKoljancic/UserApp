@@ -33,6 +33,7 @@ public class RetrofitService {
     }
 
     private static void initializeRetrofit() {
+
         retrofit = new Retrofit.Builder()
                 .baseUrl(MyURL.getURL())
                 .addConverterFactory(new NullOnEmptyConverterFactory())

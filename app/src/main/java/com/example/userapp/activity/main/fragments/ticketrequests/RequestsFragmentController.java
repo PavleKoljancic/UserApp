@@ -35,21 +35,24 @@ public class RequestsFragmentController extends ActivityController {
         requestDataModel.setResponseSelected(false);
         if(requestDataModel.getUserTicketRequest().size()>0)
         {
+            requestsFragment.noRequestsText.setVisibility(View.INVISIBLE);
             if (requestsFragment.requestViewAdapter == null) {
                 requestsFragment.requestViewAdapter = new RequestViewAdapter(requestDataModel.getAllTickets(),requestDataModel.getUserTicketRequest());
                 requestsFragment.requestRV.setAdapter(requestsFragment.requestViewAdapter);
             } else {
-                if (requestDataModel.getUserTicketResponses().size() == requestsFragment.requestViewAdapter.getItemCount()) {
+
                     requestsFragment.requestViewAdapter.setData(requestDataModel.getAllTickets(),requestDataModel.getUserTicketRequest());
                     requestsFragment.requestViewAdapter.notifyDataSetChanged();
-                }
+
                 if (requestsFragment.requestRV.getAdapter() == null)
                     requestsFragment.requestRV.setAdapter(requestsFragment.requestViewAdapter);
             }
 
             requestsFragment.requestRV.setVisibility(View.VISIBLE);
         }
-       else requestsFragment.noRequestsText.setVisibility(View.VISIBLE);
+       else { requestsFragment.noRequestsText.setVisibility(View.VISIBLE);
+                requestsFragment.requestRV.setVisibility(View.INVISIBLE);
+       }
     }
 
     public void displayResponse() {
@@ -57,19 +60,23 @@ public class RequestsFragmentController extends ActivityController {
         requestDataModel.setResponseSelected(true);
         requestsFragment.requestRV.setVisibility(View.INVISIBLE);
         if (requestDataModel.getUserTicketResponses().size() > 0) {
+            requestsFragment.noResponseText.setVisibility(View.INVISIBLE);
             if (requestsFragment.responseViewAdapter == null) {
                 requestsFragment.responseViewAdapter = new ResponseViewAdapter(requestDataModel.getUserTicketResponses());
                 requestsFragment.responseRV.setAdapter(requestsFragment.responseViewAdapter);
             } else {
-                if (requestDataModel.getUserTicketResponses().size() == requestsFragment.responseViewAdapter.getItemCount()) {
+
                     requestsFragment.responseViewAdapter.setData(requestDataModel.getUserTicketResponses());
                     requestsFragment.responseViewAdapter.notifyDataSetChanged();
-                }
+
                 if (requestsFragment.responseRV.getAdapter() == null)
                     requestsFragment.responseRV.setAdapter(requestsFragment.responseViewAdapter);
             }
             requestsFragment.responseRV.setVisibility(View.VISIBLE);
-        } else requestsFragment.noResponseText.setVisibility(View.VISIBLE);
+        } else {
+            requestsFragment.noResponseText.setVisibility(View.VISIBLE);
+            requestsFragment.responseRV.setVisibility(View.INVISIBLE);
+        }
     }
 
 
