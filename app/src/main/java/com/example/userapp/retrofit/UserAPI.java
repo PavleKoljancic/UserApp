@@ -84,4 +84,7 @@ public interface UserAPI {
     @GET("/api/ticketRequests/addTicketRequest={ticketTypeId}&UserId={UserID}")
     public Call<String> addTicketRequest(@Path("ticketTypeId") Integer ticketTypeId, @Path("UserID") Integer userId,@Header("Authorization") String BarerToken);
 
+    @GET("/api/tickets/getAllTickets/pagesize={pagesize}size={size}")
+    public Call<List<TicketType>> getAllTicketTypes(@Path("pagesize") Integer pagesize, @Path("size") Integer size,@Header("Authorization") String BarerToken);
+
 }

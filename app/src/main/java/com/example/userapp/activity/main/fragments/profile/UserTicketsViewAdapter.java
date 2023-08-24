@@ -48,15 +48,19 @@ public class UserTicketsViewAdapter extends RecyclerView.Adapter< UserTicketsVie
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.ticketName.setText(userTickets.get(position).getType().getName());
         String type = userTickets.get(position).getType().getType();
+        StringBuilder stringBuilder = new StringBuilder();
         if("periodic".equals(type))
-            holder.ticketType.setText("Periodična");
-        else holder.ticketType.setText("Količinska");
+            stringBuilder.append("Periodična karta");
+        else holder.ticketType.setText("Količinska karta");
+
+
         if(userTickets.get(position).getUsage()!=null)
-            holder.ticketState.setText("Iskorišteno vožnji "+userTickets.get(position).getUsage()+"/"+userTickets.get(position).getType().getAmount() );
+            stringBuilder.append(", broj preostalih vožnji:"+userTickets.get(position).getUsage());
         else {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            holder.ticketState.setText("Karta važi do " + simpleDateFormat.format(userTickets.get(position).getValidUntilDate()));
+            stringBuilder.append("koja važi do " + simpleDateFormat.format(userTickets.get(position).getValidUntilDate()));
         }
+        holder.ticketType.setText(stringBuilder.toString());
     }
 
 
@@ -72,13 +76,12 @@ public class UserTicketsViewAdapter extends RecyclerView.Adapter< UserTicketsVie
 
        public TextView ticketName;
         public TextView ticketType;
-        public TextView ticketState;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ticketName = itemView.findViewById(R.id.ticketname);
             ticketType = itemView.findViewById(R.id.type);
-            ticketState = itemView.findViewById(R.id.ticketState);
+
 
 
         }

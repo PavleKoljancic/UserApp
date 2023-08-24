@@ -21,7 +21,7 @@ public class MainController {
         if (item.getItemId() == R.id.profile) {
             currentFragment = mainActivity.profileFragment;
         } else if (item.getItemId() == R.id.request) {
-
+            currentFragment = mainActivity.requestsFragment;
 
         } else if (item.getItemId() == R.id.new_request) {
             currentFragment = mainActivity.buyTicketFragment;

@@ -49,18 +49,21 @@ public class TicketsViewAdapter extends RecyclerView.Adapter< TicketsViewAdapter
         holder.setMyTicketType(tickets.get(position));
         holder.ticketName.setText(tickets.get(position).getName());
         String type = tickets.get(position).getType();
+        StringBuilder stringBuilder = new StringBuilder();
         if("periodic".equals(type))
-            holder.ticketType.setText("Periodična");
-        else holder.ticketType.setText("Količinska");
+            stringBuilder.append("Periodična karata koja ");
+        else stringBuilder.append("Količinska karata koja ");
         if(tickets.get(position).getAmount()!=null)
-            holder.usage.setText("Važi za "+ tickets.get(position).getAmount() +" vožnji");
+            stringBuilder.append("važi za " + tickets.get(position).getAmount() +" vožnji.");
+
         else {
-            holder.usage.setText("Važi "+tickets.get(position).getValidFor()+" dana");
+            stringBuilder.append("važi "+tickets.get(position).getValidFor()+" dana.");
         }
+        holder.ticketType.setText(stringBuilder.toString());
         holder.price.setText("Cijena: "+tickets.get(position).getCost()+" KM");
 
         if(tickets.get(position).getNeedsDocumentaion())
-            holder.documents.setText("Dokument:\n"+tickets.get(position).getDocumentaionName());
+            holder.documents.setText("Dokument: "+tickets.get(position).getDocumentaionName());
         else holder.documents.setText("Dokument: Ne zahtjeva");
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +97,7 @@ public class TicketsViewAdapter extends RecyclerView.Adapter< TicketsViewAdapter
 
        public TextView ticketName;
         public TextView ticketType;
-        public TextView usage;
+
         public TextView price;
 
         public void setMyTicketType(TicketType myTicketType) {
@@ -108,7 +111,6 @@ public class TicketsViewAdapter extends RecyclerView.Adapter< TicketsViewAdapter
             super(itemView);
             ticketName = itemView.findViewById(R.id.tickeTypetname);
             ticketType = itemView.findViewById(R.id.typeType);
-            usage = itemView.findViewById(R.id.usage);
             price = itemView.findViewById(R.id.price);
             documents = itemView.findViewById(R.id.documentation);
 
