@@ -29,6 +29,7 @@ public class MainController {
         } else if (item.getItemId() == R.id.documents) {
             currentFragment = mainActivity.documentsFragment;
         } else if (item.getItemId() == R.id.settings) {
+                currentFragment=mainActivity.settingsFragment;
         }
         mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_view,currentFragment).commit();
     }
