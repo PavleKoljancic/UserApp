@@ -36,7 +36,7 @@ public class ProfileFragment extends Fragment {
     TextView informText;
     RecyclerView ticketsRecyclerView;
     UserTicketsViewAdapter userTicketsViewAdapter;
-    boolean viewCreated=false;
+
     ProfileFragmentController profileFragmentController;
     CircularProgressIndicator loadProfilePicture;
     LinearProgressIndicator loadData;
@@ -44,6 +44,7 @@ public class ProfileFragment extends Fragment {
     boolean dataFetched;
     public ProfileFragment() {
         // Required empty public constructor
+        profileFragmentController= new ProfileFragmentController(this);
         dataFetched = false;
     }
 
@@ -59,8 +60,8 @@ public class ProfileFragment extends Fragment {
         userTicketsViewAdapter=null;
         loadProfilePicture = getView().findViewById(R.id.loadPictureProgress);
         loadData = getView().findViewById(R.id.loadingData);
-        profileFragmentController= new ProfileFragmentController(this);
-        viewCreated=true;
+
+
         swipeRefreshLayout = getView().findViewById(R.id.swiperefreshProfile);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -74,6 +75,7 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onStart() {
+        profileFragmentController.subscribeToUserDataModel();
         if(!dataFetched) {
             profileFragmentController.loadInitUi();
         dataFetched=true;
@@ -87,5 +89,16 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         return inflater.inflate(R.layout.fragment_profile, container, false);
+    }
+
+    public void quitHandlerThread()
+    {
+        this.profileFragmentController.quitHandlerThread();
+    }
+
+    @Override
+    public void onDestroyView() {
+        profileFragmentController.unsubscribeToUserDataModel();
+        super.onDestroyView();
     }
 }

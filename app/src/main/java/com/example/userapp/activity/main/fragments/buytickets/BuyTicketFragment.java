@@ -27,10 +27,19 @@ public class BuyTicketFragment extends Fragment {
     SwipeRefreshLayout swipeRefreshLayout;
     TextView infoText;
     RecyclerView recyclerView;
-    TicketsViewAdapter ticketsViewAdapter=null;
-    boolean dataFetched =false;
+    TicketsViewAdapter ticketsViewAdapter;
+    boolean dataFetched;
+
 
     BuyTicketFragmentController buyTicketFragmentController;
+
+    public BuyTicketFragment() {
+        buyTicketFragmentController = new BuyTicketFragmentController(this);
+        ticketsViewAdapter = null;
+        dataFetched = false;
+
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -45,7 +54,7 @@ public class BuyTicketFragment extends Fragment {
          infoText= getView().findViewById(R.id.infoTextTickets);
          recyclerView= getView().findViewById(R.id.rvtickets);
          recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-        buyTicketFragmentController = new BuyTicketFragmentController(this);
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -63,5 +72,10 @@ public class BuyTicketFragment extends Fragment {
         }
         else buyTicketFragmentController.displayTickets();
         super.onStart();
+    }
+
+    public void quitHandlerThread()
+    {
+        this.buyTicketFragmentController.quitHandlerThread();
     }
 }

@@ -1,19 +1,17 @@
 package com.example.userapp.activity.main.fragments.ticketrequests;
 
-import com.example.userapp.activity.ActivityModel;
+import com.example.userapp.activity.UserApiDecorator;
 import com.example.userapp.models.TicketRequest;
 import com.example.userapp.models.TicketRequestResponse;
 import com.example.userapp.models.TicketType;
-import com.example.userapp.singeltons.TokenManager;
+import com.example.userapp.token.TokenManager;
 
 import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.List;
 
-import retrofit2.Response;
-
-public class RequestsFragmentModel extends ActivityModel {
+public class RequestsApiDecorator extends UserApiDecorator {
 
 
     List<TicketRequest> getUserTicketRequests() throws JSONException, IOException {

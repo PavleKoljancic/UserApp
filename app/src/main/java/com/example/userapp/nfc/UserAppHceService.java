@@ -3,15 +3,20 @@ package com.example.userapp.nfc;
 import android.nfc.cardemulation.HostApduService;
 import android.os.Bundle;
 
-import com.example.userapp.singeltons.TokenManager;
-
-import org.json.JSONException;
+import com.example.userapp.token.TokenManager;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class UserAppHceService extends HostApduService {
     private static final String RESPONSE_SUCCESS = "9000";
+
+    public synchronized static void setUserId(Integer userId) {
+        if(userId!=null)
+            UserId = userId;
+    }
+
+    private static Integer UserId=0;
    private static byte []  selectCommand = {(byte)0x00, (byte)0xA4, (byte)0x04,(byte) 0x00,(byte) 0x07, (byte)0xF0,0x01,0x02,0x03,0x04,0x05,0x06,0x00};
    private  static                  byte[] getData = {
            (byte) 0x00,  // CLA
@@ -27,13 +32,9 @@ public class UserAppHceService extends HostApduService {
                 return hexStringToByteArray(RESPONSE_SUCCESS);
             else if (Arrays.equals(getData,commandApdu)&& TokenManager.getInstance()!=null){
 
-                try {
-                    byteBuffer.putInt(TokenManager.getInstance().getId());
+                    byteBuffer.putInt(UserId);
                     return byteBuffer.array();
-                } catch (JSONException e) {
-                    byteBuffer.putInt(0);
-                    return byteBuffer.array();
-                }
+
                 }
             else return hexStringToByteArray("6700");
     }

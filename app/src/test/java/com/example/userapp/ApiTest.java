@@ -2,14 +2,12 @@ package com.example.userapp;
 
 
 import com.example.userapp.models.TicketRequest;
-import com.example.userapp.models.TicketRequestResponse;
 import com.example.userapp.models.TicketType;
 import com.example.userapp.models.User;
-import com.example.userapp.models.UserTicket;
 import com.example.userapp.models.UserWithPassword;
 import com.example.userapp.retrofit.RetrofitService;
 import com.example.userapp.retrofit.UserAPI;
-import com.example.userapp.singeltons.TokenManager;
+import com.example.userapp.token.TokenManager;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -23,7 +21,6 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
-import retrofit2.Call;
 import retrofit2.Response;
 
 public class ApiTest {

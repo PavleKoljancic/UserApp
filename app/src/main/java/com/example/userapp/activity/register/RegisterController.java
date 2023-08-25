@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.View;
 
-import com.example.userapp.activity.ActivityController;
+import com.example.userapp.activity.AbstractViewController;
 import com.example.userapp.activity.login.LoginActivity;
 
 import com.example.userapp.activity.main.MainActivity;
@@ -22,15 +22,15 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.HashSet;
 
-public class RegisterController extends ActivityController implements UserDataChangeSubscriber {
+public class RegisterController extends AbstractViewController implements UserDataChangeSubscriber {
     private RegisterActivity registerActivity;
-    private RegisterModel registerModel;
+    private RegisterApiDecorator registerApiDecorator;
 
 
     RegisterController(RegisterActivity registerActivity) {
         super("HANDLER THREAD NO PICTURE ACTIVITY");
         this.registerActivity = registerActivity;
-        this.registerModel = new RegisterModel();
+        this.registerApiDecorator = new RegisterApiDecorator();
         this.userDataModel.subscribeToDataChange(this);
 
     }
@@ -53,8 +53,8 @@ public class RegisterController extends ActivityController implements UserDataCh
             boolean isLoggedIn = false;
             boolean desilaSeGreska = false;
             try {
-                isRegistard = this.registerModel.attemptRegister(userWithPassword);
-                isLoggedIn = this.registerModel.attemptLogin(userWithPassword);
+                isRegistard = this.registerApiDecorator.attemptRegister(userWithPassword);
+                isLoggedIn = this.registerApiDecorator.attemptLogin(userWithPassword);
             } catch (IOException | JSONException e) {
                 desilaSeGreska = true;
             } finally {
@@ -71,7 +71,7 @@ public class RegisterController extends ActivityController implements UserDataCh
 
                 if (isLoggedIn) {
                     try {
-                        this.userDataModel.updateUser(this.registerModel.loadUser());
+                        this.userDataModel.updateUser(this.registerApiDecorator.loadUser());
                         registerActivity.runOnUiThread(()-> registerActivity.progressIndicator.setVisibility(View.INVISIBLE));
                     } catch (IOException | JSONException e) {
 

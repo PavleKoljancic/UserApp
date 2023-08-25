@@ -1,4 +1,4 @@
-package com.example.userapp.singeltons;
+package com.example.userapp.token;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.view.View;
 
-import com.example.userapp.activity.ActivityController;
+import com.example.userapp.activity.AbstractViewController;
 import com.example.userapp.activity.main.MainActivity;
 import com.example.userapp.activity.nopicture.NoPictureActivity;
 import com.example.userapp.activity.register.RegisterActivity;
@@ -14,7 +14,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
-class LoginController  extends ActivityController {
+class LoginController  extends AbstractViewController {
     private LoginActivity loginActivity;
     private  LoginModel loginModel;
 

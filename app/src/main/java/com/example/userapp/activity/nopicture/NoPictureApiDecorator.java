@@ -1,10 +1,7 @@
 package com.example.userapp.activity.nopicture;
 
-import com.example.userapp.activity.ActivityModel;
-import com.example.userapp.models.User;
-import com.example.userapp.retrofit.RetrofitService;
-import com.example.userapp.retrofit.UserAPI;
-import com.example.userapp.singeltons.TokenManager;
+import com.example.userapp.activity.UserApiDecorator;
+import com.example.userapp.token.TokenManager;
 
 import org.json.JSONException;
 
@@ -15,7 +12,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Response;
 
-class NoPictureModel extends ActivityModel {
+class NoPictureApiDecorator extends UserApiDecorator {
 
 
      public void setPictureBytes(byte[] pictureBytes) {
@@ -23,7 +20,7 @@ class NoPictureModel extends ActivityModel {
      }
 
      byte [] pictureBytes;
-     NoPictureModel()
+     NoPictureApiDecorator()
      {
 
         this.pictureBytes=null;

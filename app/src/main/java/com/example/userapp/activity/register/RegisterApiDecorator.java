@@ -1,14 +1,14 @@
 package com.example.userapp.activity.register;
 
-import com.example.userapp.activity.ActivityModel;
+import com.example.userapp.activity.UserApiDecorator;
 import com.example.userapp.models.UserWithPassword;
-import com.example.userapp.singeltons.TokenManager;
+import com.example.userapp.token.TokenManager;
 
 import org.json.JSONException;
 
 import java.io.IOException;
 
-public class RegisterModel extends ActivityModel {
+public class RegisterApiDecorator extends UserApiDecorator {
 
      boolean attemptRegister(UserWithPassword userWithPassword) throws IOException, JSONException {
 

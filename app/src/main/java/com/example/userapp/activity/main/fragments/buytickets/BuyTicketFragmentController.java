@@ -1,14 +1,12 @@
 package com.example.userapp.activity.main.fragments.buytickets;
 
-import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Handler;
 import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.example.userapp.activity.ActivityController;
+import com.example.userapp.activity.AbstractViewController;
 import com.example.userapp.datamodel.ticket.TicketDataModel;
 import com.example.userapp.models.TicketType;
 
@@ -17,17 +15,17 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
-public class BuyTicketFragmentController extends ActivityController {
+public class BuyTicketFragmentController extends AbstractViewController {
 
     BuyTicketFragment buyTicketFragment;
-    BuyTicketFragmentModel buyTicketFragmentModel;
+    TicketsApiDecorator ticketsApiDecorator;
 
     TicketDataModel ticketDataModel;
 
     BuyTicketFragmentController(BuyTicketFragment buyTicketFragment) {
         super("HANDLER THREAD FOR TICKET FRAGMENT");
         this.buyTicketFragment = buyTicketFragment;
-        this.buyTicketFragmentModel = new BuyTicketFragmentModel();
+        this.ticketsApiDecorator = new TicketsApiDecorator();
         this.ticketDataModel = TicketDataModel.getInstance();
     }
 
@@ -38,7 +36,7 @@ public class BuyTicketFragmentController extends ActivityController {
         handler.post(() -> {
 
             try {
-                ticketDataModel.setTickets(buyTicketFragmentModel.getTickets());
+                ticketDataModel.setTickets(ticketsApiDecorator.getTickets());
                 buyTicketFragment.getActivity().runOnUiThread(() -> displayTickets());
 
             } catch (IOException e) {
@@ -89,7 +87,7 @@ public class BuyTicketFragmentController extends ActivityController {
 
 
             try {
-                String response = buyTicketFragmentModel.sendTicketRequest(ticketType);
+                String response = ticketsApiDecorator.sendTicketRequest(ticketType);
                 buyTicketFragment.getActivity().runOnUiThread(() -> {
                     if("Insufficient funds".equals(response))
                     buyTicketFragment.infoText.setText("Nedovoljno kredita.");

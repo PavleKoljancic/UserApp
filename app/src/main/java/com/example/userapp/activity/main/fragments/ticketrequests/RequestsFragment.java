@@ -51,6 +51,7 @@ public class RequestsFragment extends Fragment {
     public RequestsFragment()
     {
         dataFetched=false;
+        controller = new RequestsFragmentController(this);
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -60,7 +61,7 @@ public class RequestsFragment extends Fragment {
          swipeRefreshLayout = view.findViewById(R.id.swiperefreshRequests);
          loadData = view.findViewById(R.id.loadingDataRequest);
         MaterialButtonToggleGroup toggleButton = view.findViewById(R.id.toggleButton);
-        controller = new RequestsFragmentController(this);
+
         infoText = view.findViewById(R.id.infoTextRequests);
         responseRV = view.findViewById(R.id.rvResponse);
         responseRV.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
@@ -99,5 +100,10 @@ public class RequestsFragment extends Fragment {
         }
         else controller.displaySelected();
         super.onStart();
+    }
+
+    public void quitHandlerThread()
+    {
+        this.controller.quitHandlerThread();
     }
 }

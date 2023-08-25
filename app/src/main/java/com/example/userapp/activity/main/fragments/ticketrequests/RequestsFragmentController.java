@@ -3,7 +3,7 @@ package com.example.userapp.activity.main.fragments.ticketrequests;
 import android.os.Handler;
 import android.view.View;
 
-import com.example.userapp.activity.ActivityController;
+import com.example.userapp.activity.AbstractViewController;
 import com.example.userapp.datamodel.requests.RequestDataModel;
 import com.example.userapp.models.TicketRequest;
 import com.example.userapp.models.TicketRequestResponse;
@@ -14,18 +14,18 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.List;
 
-public class RequestsFragmentController extends ActivityController {
+public class RequestsFragmentController extends AbstractViewController {
 
     RequestsFragment requestsFragment;
 
-    RequestsFragmentModel requestsFragmentModel;
+    RequestsApiDecorator requestsApiDecorator;
     RequestDataModel requestDataModel;
 
     protected RequestsFragmentController(RequestsFragment requestsFragment) {
         super("HANDLER THREAD FOR API REQUEST FRAGMENT");
         this.requestsFragment = requestsFragment;
         this.requestDataModel = RequestDataModel.getInstance();
-        this.requestsFragmentModel = new RequestsFragmentModel();
+        this.requestsApiDecorator = new RequestsApiDecorator();
     }
 
     public void displayRequests() {
@@ -108,9 +108,9 @@ public class RequestsFragmentController extends ActivityController {
 
             boolean dataFetchNoError = false;
             try {
-                List<TicketRequest> request = requestsFragmentModel.getUserTicketRequests();
-                List<TicketType> tickets = requestsFragmentModel.getAllTicketTypes();
-                List<TicketRequestResponse> responses = requestsFragmentModel.getUserTicketResponses();
+                List<TicketRequest> request = requestsApiDecorator.getUserTicketRequests();
+                List<TicketType> tickets = requestsApiDecorator.getAllTicketTypes();
+                List<TicketRequestResponse> responses = requestsApiDecorator.getUserTicketResponses();
                 this.requestDataModel.setUserTicketRequest(request);
                 this.requestDataModel.setUserTicketResponses(responses);
                 this.requestDataModel.setAllTickets(tickets);

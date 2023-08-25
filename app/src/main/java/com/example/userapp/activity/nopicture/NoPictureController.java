@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.view.View;
 
 import com.canhub.cropper.CropImageContractOptions;
-import com.example.userapp.activity.ActivityController;
+import com.example.userapp.activity.AbstractViewController;
 import com.example.userapp.activity.main.MainActivity;
 import com.example.userapp.models.TicketRequest;
 import com.example.userapp.models.TicketRequestResponse;
@@ -20,15 +20,15 @@ import org.json.JSONException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
-class NoPictureController extends ActivityController implements UserDataChangeSubscriber {
+class NoPictureController extends AbstractViewController implements UserDataChangeSubscriber {
 
      NoPictureActivity noPictureActivity;
-     NoPictureModel  noPictureModel;
+     NoPictureApiDecorator noPictureApiDecorator;
 
     public NoPictureController(NoPictureActivity noPictureActivity)
     {   super("HANDLER THREAD NO PICTURE ACTIVITY");
         this.noPictureActivity= noPictureActivity;
-        this.noPictureModel = new  NoPictureModel ();
+        this.noPictureApiDecorator = new NoPictureApiDecorator();
         this.userDataModel.subscribeToDataChange(this);
     }
 
@@ -55,7 +55,7 @@ class NoPictureController extends ActivityController implements UserDataChangeSu
         noPictureActivity.uploadButton.setVisibility(View.VISIBLE);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         noPictureActivity.cropped.compress(Bitmap.CompressFormat.JPEG, 50, stream);
-        this.noPictureModel.setPictureBytes(stream.toByteArray());
+        this.noPictureApiDecorator.setPictureBytes(stream.toByteArray());
     }
 
     public void uploadCurrentImage() {
@@ -64,9 +64,9 @@ class NoPictureController extends ActivityController implements UserDataChangeSu
         handler.post(()-> {
             Boolean result=null;
             try {
-                 result =noPictureModel.uploadCurrentPicture();
+                 result = noPictureApiDecorator.uploadCurrentPicture();
                  if(result)
-                     this.userDataModel.updateUser(this.noPictureModel.loadUser());
+                     this.userDataModel.updateUser(this.noPictureApiDecorator.loadUser());
             } catch (JSONException|IOException e) {
 
             }

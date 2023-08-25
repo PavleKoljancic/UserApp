@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.View;
 
-import com.example.userapp.activity.ActivityController;
+import com.example.userapp.activity.AbstractViewController;
 import com.example.userapp.models.TicketRequest;
 import com.example.userapp.models.TicketRequestResponse;
 import com.example.userapp.models.User;
@@ -17,22 +17,30 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.HashSet;
 
-public class ProfileFragmentController extends ActivityController implements UserDataChangeSubscriber {
+public class ProfileFragmentController extends AbstractViewController implements UserDataChangeSubscriber {
 
     ProfileFragment profileFragment;
     UserDataModel userDataModel;
-    ProfileFragmentModel profileFragmentModel;
+    UserProfileApiDecorator userProfileApiDecorator;
 
 
     ProfileFragmentController(ProfileFragment profileFragment)
     {   super("Profile fragment HandlerThread");
         this.profileFragment=profileFragment;
         this.userDataModel = UserDataModel.getInstance();
-        this.profileFragmentModel = new ProfileFragmentModel();
-        this.userDataModel.subscribeToDataChange(this);
+        this.userProfileApiDecorator = new UserProfileApiDecorator();
+
+
     }
 
-
+    void subscribeToUserDataModel()
+    {
+        this.userDataModel.subscribeToDataChange(this);
+    }
+    void unsubscribeToUserDataModel()
+    {
+        this.userDataModel.unsubscribeToDataChange(this);
+    }
     @Override
     public void onUserDataChanged(User user, HashSet<UserTicket> userTickets, HashSet<TicketRequestResponse> ticketRequestResponses, HashSet<TicketRequest> unprocessedTicketRequest, Bitmap userProfilePicture) {
         if(user!=null)
@@ -44,7 +52,7 @@ public class ProfileFragmentController extends ActivityController implements Use
     }
 
     private void updateUserTickets(HashSet<UserTicket> userTickets) {
-        if(profileFragment.viewCreated&&userTickets!=null&&userTickets.size()>0)
+        if(userTickets!=null&&userTickets.size()>0)
             if(profileFragment.userTicketsViewAdapter==null)
             {
                 profileFragment.userTicketsViewAdapter = new UserTicketsViewAdapter(userTickets);
@@ -72,10 +80,9 @@ public class ProfileFragmentController extends ActivityController implements Use
     }
 
     private void updateUserTextUi() {
-        if(profileFragment.viewCreated) {
+
             profileFragment.nameAndLastname.setText(userDataModel.getUser().getFirstName() + " " + userDataModel.getUser().getLastName());
             profileFragment.credit.setText("Kredit: " + userDataModel.getUser().getCredit() + "KM");
-        }
     }
 
     public void reloadData()
@@ -86,12 +93,12 @@ public class ProfileFragmentController extends ActivityController implements Use
 
             try {
 
-                    this.userDataModel.updateUser(this.profileFragmentModel.loadUser());
+                    this.userDataModel.updateUser(this.userProfileApiDecorator.loadUser());
             } catch (JSONException | IOException e) {
 
             }
             try {
-                userDataModel.updateUserTicket(profileFragmentModel.getListUserTickets(userDataModel.getUser()));
+                userDataModel.updateUserTicket(userProfileApiDecorator.getListUserTickets(userDataModel.getUser()));
             } catch (IOException e) {
 
             }
@@ -116,7 +123,7 @@ public class ProfileFragmentController extends ActivityController implements Use
         handler.post(()-> {
         try {
 
-            userDataModel.updateUserProfilePicture(this.profileFragmentModel.getUserProfilePicture(userDataModel.getUser()));
+            userDataModel.updateUserProfilePicture(this.userProfileApiDecorator.getUserProfilePicture(userDataModel.getUser()));
         } catch (IOException e) {
 
         } });
@@ -127,7 +134,7 @@ public class ProfileFragmentController extends ActivityController implements Use
         handler.post(()-> {
             try {
 
-                userDataModel.updateUserTicket(profileFragmentModel.getListUserTickets(userDataModel.getUser()));
+                userDataModel.updateUserTicket(userProfileApiDecorator.getListUserTickets(userDataModel.getUser()));
             } catch (IOException e) {
 
             } });

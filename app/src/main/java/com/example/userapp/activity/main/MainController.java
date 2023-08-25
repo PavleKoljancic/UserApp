@@ -27,6 +27,7 @@ public class MainController {
             currentFragment = mainActivity.buyTicketFragment;
 
         } else if (item.getItemId() == R.id.documents) {
+            currentFragment = mainActivity.documentsFragment;
         } else if (item.getItemId() == R.id.settings) {
         }
         mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_view,currentFragment).commit();

@@ -4,11 +4,11 @@ import android.os.HandlerThread;
 
 import com.example.userapp.datamodel.user.UserDataModel;
 
-public abstract class ActivityController {
+public abstract class AbstractViewController {
     protected HandlerThread handlerThread;
     protected UserDataModel userDataModel;
 
-    protected  ActivityController(String HandlerName)
+    protected AbstractViewController(String HandlerName)
     {
         this.userDataModel = UserDataModel.getInstance();
         this.handlerThread = new HandlerThread(HandlerName);

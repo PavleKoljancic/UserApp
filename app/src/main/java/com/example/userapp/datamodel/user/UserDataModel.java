@@ -7,6 +7,7 @@ import com.example.userapp.models.TicketRequest;
 import com.example.userapp.models.TicketRequestResponse;
 import com.example.userapp.models.User;
 import com.example.userapp.models.UserTicket;
+import com.example.userapp.nfc.UserAppHceService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -64,11 +65,14 @@ public class UserDataModel {
         if (this.user == null) {
             if (user != null) {
                 this.user = user;
+                UserAppHceService.setUserId(this.user.getId());
                 dataChanged = true;
             }
         } else
             synchronized (this.user) {
-                if (!this.user.equals(user)) {
+                if (!this.user.equals(user)&&user!=null) {
+                    if(user.getId().compareTo(this.user.getId())!=0)
+                        UserAppHceService.setUserId(user.getId());
                     this.user = user;
                     dataChanged = true;
                 }

@@ -1,12 +1,9 @@
 package com.example.userapp.activity.main.fragments.profile;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
-import com.example.userapp.activity.ActivityModel;
+import com.example.userapp.activity.UserApiDecorator;
 import com.example.userapp.models.User;
 import com.example.userapp.models.UserTicket;
-import com.example.userapp.singeltons.TokenManager;
+import com.example.userapp.token.TokenManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,7 +11,7 @@ import java.util.List;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 
-public class ProfileFragmentModel extends ActivityModel {
+public class UserProfileApiDecorator extends UserApiDecorator {
 
     List<UserTicket> getListUserTickets(User user) throws IOException {
         List<UserTicket> result = api.getUserTickets(user,TokenManager.bearer() + TokenManager.getInstance().getToken()).execute().body();

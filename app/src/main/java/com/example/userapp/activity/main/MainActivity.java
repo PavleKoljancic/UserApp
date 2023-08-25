@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 import com.example.userapp.R;
 import com.example.userapp.activity.main.fragments.buytickets.BuyTicketFragment;
+import com.example.userapp.activity.main.fragments.documents.DocumentsFragment;
 import com.example.userapp.activity.main.fragments.profile.ProfileFragment;
 import com.example.userapp.activity.main.fragments.ticketrequests.RequestsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     MainController mainController;
     FragmentManager fragmentManager;
     RequestsFragment requestsFragment;
+    DocumentsFragment documentsFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         profileFragment = new ProfileFragment();
         buyTicketFragment = new BuyTicketFragment();
         requestsFragment = new RequestsFragment();
+        documentsFragment = new DocumentsFragment();
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.profile);
         fragmentManager = getSupportFragmentManager();
@@ -47,5 +50,14 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        profileFragment.quitHandlerThread();
+        buyTicketFragment.quitHandlerThread();
+        requestsFragment.quitHandlerThread();
+        documentsFragment.quitHandlerThread();
+        super.onDestroy();
     }
 }

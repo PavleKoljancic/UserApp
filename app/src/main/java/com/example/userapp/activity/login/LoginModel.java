@@ -1,17 +1,14 @@
 package com.example.userapp.activity.login;
 
-import com.example.userapp.activity.ActivityModel;
-import com.example.userapp.models.User;
+import com.example.userapp.activity.UserApiDecorator;
 import com.example.userapp.models.UserWithPassword;
-import com.example.userapp.retrofit.RetrofitService;
-import com.example.userapp.retrofit.UserAPI;
-import com.example.userapp.singeltons.TokenManager;
+import com.example.userapp.token.TokenManager;
 
 import org.json.JSONException;
 
 import java.io.IOException;
 
-class LoginModel extends ActivityModel {
+class LoginModel extends UserApiDecorator {
     private  LoginController loginController;
 
 
