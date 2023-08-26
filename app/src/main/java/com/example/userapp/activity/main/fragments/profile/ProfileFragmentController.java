@@ -24,76 +24,42 @@ public class ProfileFragmentController extends AbstractViewController implements
     UserProfileApiDecorator userProfileApiDecorator;
 
 
-    ProfileFragmentController(ProfileFragment profileFragment)
-    {   super("Profile fragment HandlerThread");
-        this.profileFragment=profileFragment;
+    ProfileFragmentController(ProfileFragment profileFragment) {
+        super("Profile fragment HandlerThread");
+        this.profileFragment = profileFragment;
         this.userDataModel = UserDataModel.getInstance();
         this.userProfileApiDecorator = new UserProfileApiDecorator();
 
 
     }
 
-    void subscribeToUserDataModel()
-    {
+    void subscribeToUserDataModel() {
         this.userDataModel.subscribeToDataChange(this);
     }
-    void unsubscribeToUserDataModel()
-    {
+
+    void unsubscribeToUserDataModel() {
         this.userDataModel.unsubscribeToDataChange(this);
     }
+
     @Override
     public void onUserDataChanged(User user, HashSet<UserTicket> userTickets, HashSet<TicketRequestResponse> ticketRequestResponses, HashSet<TicketRequest> unprocessedTicketRequest, Bitmap userProfilePicture) {
-        if(user!=null)
-            profileFragment.getActivity().runOnUiThread(()->updateUserTextUi());
-        if(userProfilePicture!=null)
-            profileFragment.getActivity().runOnUiThread(()->updateProfilePicture(userProfilePicture));
-        if(userTickets!=null)
-            profileFragment.getActivity().runOnUiThread(()-> updateUserTickets(userTickets));
+        if (user != null&&profileFragment.getActivity()!=null)
+            profileFragment.getActivity().runOnUiThread(() -> updateUserTextUi());
+        if (userProfilePicture != null&&profileFragment.getActivity()!=null)
+            profileFragment.getActivity().runOnUiThread(() -> updateProfilePictureUi(userProfilePicture));
+        if (userTickets != null&&profileFragment.getActivity()!=null)
+            profileFragment.getActivity().runOnUiThread(() -> updateUserTicketsUi(userTickets));
     }
 
-    private void updateUserTickets(HashSet<UserTicket> userTickets) {
-        if(userTickets!=null&&userTickets.size()>0)
-            if(profileFragment.userTicketsViewAdapter==null)
-            {
-                profileFragment.userTicketsViewAdapter = new UserTicketsViewAdapter(userTickets);
-                profileFragment.ticketsRecyclerView.setAdapter(profileFragment.userTicketsViewAdapter);
-            }
-            else
-            {
-                profileFragment.userTicketsViewAdapter.setUserTickets(userTickets);
-                profileFragment.userTicketsViewAdapter.notifyDataSetChanged();
-                if(profileFragment.ticketsRecyclerView.getAdapter()==null)
-                    profileFragment.ticketsRecyclerView.setAdapter(profileFragment.userTicketsViewAdapter);
-            }
-            profileFragment.informText.setVisibility(View.INVISIBLE);
-            profileFragment.ticketsRecyclerView.setVisibility(View.VISIBLE);
-    }
-
-    private void updateProfilePicture(Bitmap userProfilePicture) {
-
-        profileFragment.profilePicture.setImageBitmap(userProfilePicture);
-        profileFragment.loadProfilePicture.setVisibility(View.INVISIBLE);
-        profileFragment.loadData.setVisibility(View.INVISIBLE);
-        profileFragment.profilePicture.setVisibility(View.VISIBLE);
-
-
-    }
-
-    private void updateUserTextUi() {
-
-            profileFragment.nameAndLastname.setText(userDataModel.getUser().getFirstName() + " " + userDataModel.getUser().getLastName());
-            profileFragment.credit.setText("Kredit: " + userDataModel.getUser().getCredit() + "KM");
-    }
-
-    public void reloadData()
-    {
+    public void reloadData() {
+        changeToNotLoadingUI();
         Handler handler = new Handler(super.handlerThread.getLooper());
-        profileFragment.loadData.setVisibility(View.VISIBLE);
-        handler.post(()-> {
+        changeToNotLoadingUI();
+        handler.post(() -> {
 
             try {
 
-                    this.userDataModel.updateUser(this.userProfileApiDecorator.loadUser());
+                this.userDataModel.updateUser(this.userProfileApiDecorator.loadUser());
             } catch (JSONException | IOException e) {
 
             }
@@ -101,50 +67,97 @@ public class ProfileFragmentController extends AbstractViewController implements
                 userDataModel.updateUserTicket(userProfileApiDecorator.getListUserTickets(userDataModel.getUser()));
             } catch (IOException e) {
 
-            }
-            finally {
-                profileFragment.getActivity().runOnUiThread(()->{        profileFragment.loadData.setVisibility(View.INVISIBLE);
-                profileFragment.swipeRefreshLayout.setRefreshing(false);
-                });
+            } finally {
+                if(profileFragment.getActivity()!=null)
+                profileFragment.getActivity().runOnUiThread(() -> changeToNotLoadingUI());
             }
         });
     }
 
-    public void loadInitUi() {
+
+    public void loadInit() {
         updateUserTextUi();
         fetchUserProfilePicture();
         fetchUserTickets();
     }
 
 
+    private void fetchUserProfilePicture() {
+        Handler handler = new Handler(super.handlerThread.getLooper());
+        handler.post(() -> {
+            try {
 
-    private void fetchUserProfilePicture()
-    {   Handler handler = new Handler(super.handlerThread.getLooper());
-        handler.post(()-> {
-        try {
+                userDataModel.updateUserProfilePicture(this.userProfileApiDecorator.getUserProfilePicture(userDataModel.getUser()));
+            } catch (IOException e) {
 
-            userDataModel.updateUserProfilePicture(this.userProfileApiDecorator.getUserProfilePicture(userDataModel.getUser()));
-        } catch (IOException e) {
-
-        } });
+            }
+        });
     }
 
-    private void fetchUserTickets()
-    {   Handler handler = new Handler(super.handlerThread.getLooper());
-        handler.post(()-> {
+    private void fetchUserTickets() {
+        Handler handler = new Handler(super.handlerThread.getLooper());
+        handler.post(() -> {
             try {
 
                 userDataModel.updateUserTicket(userProfileApiDecorator.getListUserTickets(userDataModel.getUser()));
             } catch (IOException e) {
 
-            } });
+            }
+        });
     }
 
-    public void displayExistingData()
-    {
-           updateUserTextUi();
-           updateProfilePicture(userDataModel.getUserProfilePicture());
-            updateUserTickets(userDataModel.getUserTickets());
+    public void displayExistingData() {
 
+        updateUserTextUi();
+        updateProfilePictureUi(userDataModel.getUserProfilePicture());
+        updateUserTicketsUi(userDataModel.getUserTickets());
+
+    }
+
+    private void changeToNotLoadingUI() {
+        if (profileFragment.viewCreated) {
+            profileFragment.loadData.setVisibility(View.INVISIBLE);
+            profileFragment.swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    private void changeToLoadingUI() {
+        if (profileFragment.viewCreated)
+            profileFragment.loadData.setVisibility(View.VISIBLE);
+    }
+
+    private void updateUserTicketsUi(HashSet<UserTicket> userTickets) {
+        if (profileFragment.viewCreated) {
+            if (userTickets != null && userTickets.size() > 0)
+                if (profileFragment.userTicketsViewAdapter == null) {
+                    profileFragment.userTicketsViewAdapter = new UserTicketsViewAdapter(userTickets);
+                    profileFragment.ticketsRecyclerView.setAdapter(profileFragment.userTicketsViewAdapter);
+                } else {
+                    profileFragment.userTicketsViewAdapter.setUserTickets(userTickets);
+                    profileFragment.userTicketsViewAdapter.notifyDataSetChanged();
+                    if (profileFragment.ticketsRecyclerView.getAdapter() == null)
+                        profileFragment.ticketsRecyclerView.setAdapter(profileFragment.userTicketsViewAdapter);
+                }
+            profileFragment.informText.setVisibility(View.INVISIBLE);
+            profileFragment.ticketsRecyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void updateProfilePictureUi(Bitmap userProfilePicture) {
+        if (profileFragment.viewCreated) {
+            profileFragment.profilePicture.setImageBitmap(userProfilePicture);
+            profileFragment.loadProfilePicture.setVisibility(View.INVISIBLE);
+            changeToNotLoadingUI();
+            profileFragment.profilePicture.setVisibility(View.VISIBLE);
+        }
+
+
+    }
+
+    private void updateUserTextUi() {
+        if (profileFragment.viewCreated) {
+            profileFragment.nameAndLastname.setText(userDataModel.getUser().getFirstName() + " " + userDataModel.getUser().getLastName());
+            profileFragment.credit.setText("Kredit: " + userDataModel.getUser().getCredit() + "KM");
+        }
     }
 }

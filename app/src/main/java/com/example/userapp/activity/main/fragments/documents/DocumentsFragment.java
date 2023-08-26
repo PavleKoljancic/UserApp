@@ -2,6 +2,8 @@ package com.example.userapp.activity.main.fragments.documents;
 
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -29,13 +31,29 @@ public class DocumentsFragment extends Fragment {
     LinearProgressIndicator progressIndicator;
     DocumentsViewAdapter documentsViewAdapter;
     boolean dataFetched;
+     boolean viewCreated;
+    ActivityResultLauncher<String> pdfPickerLauncher;
+
     public DocumentsFragment() {
         this.documentsFragmentController = new DocumentsFragmentController(this);
         this.dataFetched = false;
         this.documentsViewAdapter = null;
+        viewCreated = false;
     }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        pdfPickerLauncher= this.registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
+
+                        documentsFragmentController.createUploadDialog(uri);
+
+                    }
+                }
+        );
         this.documentsRv = view.findViewById(R.id.documentsRV);
         this.documentsRv.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         this.uploadbtn = view.findViewById(R.id.addDocument);
@@ -47,13 +65,15 @@ public class DocumentsFragment extends Fragment {
                 documentsFragmentController.fetchData();
             }
         });
+        swiperefreshDocuments.setRefreshing(false);
         uploadbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    documentsFragmentController.launchPdfPicker();
+                    pdfPickerLauncher.launch("application/pdf");
             }
         });
-        super.onViewCreated(view, savedInstanceState);
+        viewCreated=true;
+
     }
 
     @Override
@@ -69,11 +89,28 @@ public class DocumentsFragment extends Fragment {
             dataFetched=true;
         }
         else { documentsFragmentController.setDataFromDataModel();
-            documentsFragmentController.displayDocuments();}
+            documentsFragmentController.displayDocumentsUi();}
         super.onStart();
     }
     public void quitHandlerThread()
     {
         this.documentsFragmentController.quitHandlerThread();
+    }
+
+    @Override
+    public void onDestroyView() {
+
+        super.onDestroyView();
+    }
+    @Override
+    public void onPause() {
+        viewCreated=false;
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        viewCreated=true;
+        super.onResume();
     }
 }

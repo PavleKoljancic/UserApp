@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">UserApp</string>
+    <string name="app_name">e-Ticket</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="servicedesc">HCE za Korisnicku applikaciju e Ticket sistema\n</string>

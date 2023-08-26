@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.View;
+import android.widget.Toast;
 
 import com.canhub.cropper.CropImageContractOptions;
 import com.example.userapp.activity.AbstractViewController;
@@ -71,10 +72,16 @@ class NoPictureController extends AbstractViewController implements UserDataChan
 
             }
             finally {
-                noPictureActivity.runOnUiThread(()->cleanUIonUploadFinished());
+                if(noPictureActivity.backprassed)
+                    Toast.makeText(noPictureActivity, "Slika je uspješno postavljena.", Toast.LENGTH_LONG).show();
+                else
+                    noPictureActivity.runOnUiThread(()->cleanUIonUploadFinished());
             }
             if(result==null||result==false)
-                noPictureActivity.runOnUiThread(()->noPictureActivity.infoText.setText("Desila se greška, pokušajte ponovo"));
+                if(noPictureActivity.backprassed)
+                    Toast.makeText(noPictureActivity, "Desila se greška pri postavljanju slike.", Toast.LENGTH_LONG).show();
+                    else
+                    noPictureActivity.runOnUiThread(()->noPictureActivity.infoText.setText("Desila se greška, pokušajte ponovo"));
 
 
         });
@@ -91,6 +98,7 @@ class NoPictureController extends AbstractViewController implements UserDataChan
     public void onUserDataChanged(User user, HashSet<UserTicket> userTickets, HashSet<TicketRequestResponse> ticketRequestResponses, HashSet<TicketRequest> unprocessedTicketRequest, Bitmap userProfilePicture) {
         if(user!=null&&user.getPictureHash()!=null) {
             this.userDataModel.unsubscribeToDataChange(this);
+            if(!noPictureActivity.backprassed)
             this.noPictureActivity.runOnUiThread(() -> {
 
                 this.noPictureActivity.startActivity(new Intent(this.noPictureActivity, MainActivity.class));

@@ -46,19 +46,22 @@ public class RequestsFragment extends Fragment {
 
     ResponseViewAdapter responseViewAdapter = null;
     RequestViewAdapter requestViewAdapter = null;
-
+    boolean viewCreated;
 
     public RequestsFragment()
     {
         dataFetched=false;
         controller = new RequestsFragmentController(this);
+        viewCreated=false;
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
+        super.onViewCreated(view, savedInstanceState);
          noResponseText = view.findViewById(R.id.textNoResponse);
          noRequestsText=view.findViewById(R.id.textNoRequest);
          swipeRefreshLayout = view.findViewById(R.id.swiperefreshRequests);
+        swipeRefreshLayout.setRefreshing(false);
          loadData = view.findViewById(R.id.loadingDataRequest);
         MaterialButtonToggleGroup toggleButton = view.findViewById(R.id.toggleButton);
 
@@ -68,16 +71,17 @@ public class RequestsFragment extends Fragment {
 
         requestRV = view.findViewById(R.id.rvRequest);
         requestRV.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        viewCreated=true;
         toggleButton.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
             @Override
             public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
                                 if(checkedId==R.id.requestBtn&&isChecked)
                                 {
-                                    controller.displayRequests();
+                                    controller.displayRequestsUi();
                                 }
                                 if (checkedId==R.id.responseBtn&&isChecked)
                                 {
-                                    controller.displayResponse();
+                                    controller.displayResponseUi();
                                 }
             }
         });
@@ -89,7 +93,6 @@ public class RequestsFragment extends Fragment {
             }
         });
 
-        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -105,5 +108,22 @@ public class RequestsFragment extends Fragment {
     public void quitHandlerThread()
     {
         this.controller.quitHandlerThread();
+    }
+
+    @Override
+    public void onDestroyView() {
+        viewCreated=false;
+        super.onDestroyView();
+    }
+    @Override
+    public void onPause() {
+        viewCreated=false;
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewCreated=true;
     }
 }

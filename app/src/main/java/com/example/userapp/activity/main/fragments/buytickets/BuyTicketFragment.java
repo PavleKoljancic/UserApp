@@ -32,11 +32,13 @@ public class BuyTicketFragment extends Fragment {
 
 
     BuyTicketFragmentController buyTicketFragmentController;
+     boolean viewCreated;
 
     public BuyTicketFragment() {
         buyTicketFragmentController = new BuyTicketFragmentController(this);
         ticketsViewAdapter = null;
         dataFetched = false;
+        viewCreated=false;
 
     }
 
@@ -49,19 +51,21 @@ public class BuyTicketFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
          loadData = getView().findViewById(R.id.loadingDataTickets);
          swipeRefreshLayout= getView().findViewById(R.id.swiperefreshTicket);
          infoText= getView().findViewById(R.id.infoTextTickets);
          recyclerView= getView().findViewById(R.id.rvtickets);
          recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-
+        swipeRefreshLayout.setRefreshing(false);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 buyTicketFragmentController.loadTickets();
             }
         });
-        super.onViewCreated(view, savedInstanceState);
+        viewCreated=true;
+
     }
 
     @Override
@@ -70,12 +74,29 @@ public class BuyTicketFragment extends Fragment {
             buyTicketFragmentController.loadTickets();
             dataFetched=true;
         }
-        else buyTicketFragmentController.displayTickets();
+        else buyTicketFragmentController.displayTicketsUi();
         super.onStart();
     }
 
     public void quitHandlerThread()
     {
         this.buyTicketFragmentController.quitHandlerThread();
+    }
+
+    @Override
+    public void onDestroyView() {
+
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onPause() {
+        viewCreated=false;
+        super.onPause();
+    }
+    @Override
+    public void onResume() {
+        viewCreated=true;
+        super.onResume();
     }
 }

@@ -16,6 +16,7 @@ public class RegisterActivity extends AppCompatActivity {
     RegisterController registerController;
     Button registerBtn;
     EditText password;
+    EditText passwordConfirm;
     EditText email;
     EditText name;
     EditText lastname;
@@ -29,12 +30,13 @@ public class RegisterActivity extends AppCompatActivity {
 
 
          registerBtn=findViewById(R.id.attemptRegisterBtn);
-         password= findViewById(R.id.passwordFieldReg);
+         password= findViewById(R.id.passwordFieldReg1);
          email= findViewById(R.id.emialFieldReg);
          name=findViewById(R.id.nameEditTextTextReg);
          lastname=findViewById(R.id.surnameEeditTextReg);
          progressIndicator=findViewById(R.id.progressRegister);
          informText=findViewById(R.id.reginformText);
+        passwordConfirm=findViewById(R.id.passwordFieldReg2);
         this.registerController = new RegisterController(this);
 
         registerBtn.setOnClickListener(new View.OnClickListener() {

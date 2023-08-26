@@ -38,8 +38,11 @@ public class RegisterController extends AbstractViewController implements UserDa
     void onRegister()
     {
         if(checkFields()) {
-            registerActivity.progressIndicator.setVisibility(View.VISIBLE);
+            if(registerActivity.password.getText().toString().equals(registerActivity.passwordConfirm.getText().toString()))
+            {registerActivity.progressIndicator.setVisibility(View.VISIBLE);
             register(userWithPasswordFromFields());}
+            else registerActivity.informText.setText("Lozinke se ne poklapaju");
+        }
         else registerActivity.informText.setText("Polja ne smiju biti prazna");
     }
     void register(UserWithPassword userWithPassword) {   //Start UI
@@ -54,7 +57,8 @@ public class RegisterController extends AbstractViewController implements UserDa
             boolean desilaSeGreska = false;
             try {
                 isRegistard = this.registerApiDecorator.attemptRegister(userWithPassword);
-                isLoggedIn = this.registerApiDecorator.attemptLogin(userWithPassword);
+                if(isRegistard)
+                    isLoggedIn = this.registerApiDecorator.attemptLogin(userWithPassword);
             } catch (IOException | JSONException e) {
                 desilaSeGreska = true;
             } finally {
@@ -97,6 +101,8 @@ public class RegisterController extends AbstractViewController implements UserDa
         if(registerActivity.password.getText().toString()==null||registerActivity.password.getText().toString().isEmpty())
             return false;
         if(registerActivity.email.getText().toString()==null||registerActivity.email.getText().toString().isEmpty())
+            return false;
+        if(registerActivity.passwordConfirm.getText().toString()==null||registerActivity.passwordConfirm.getText().toString().isEmpty())
             return false;
         return true;
     }

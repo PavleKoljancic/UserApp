@@ -15,6 +15,7 @@ import android.widget.Button;
 
 import com.example.userapp.R;
 import com.example.userapp.activity.login.LoginActivity;
+import com.example.userapp.nfc.UserAppHceService;
 import com.example.userapp.token.TokenManager;
 
 import org.json.JSONException;
@@ -40,6 +41,7 @@ public class SettingsFragment extends Fragment {
             public void onClick(View view) {
                 try {
                     TokenManager.setToken(null);
+                    UserAppHceService.setUserId(0);
                      getActivity().startActivity(new Intent(getContext(), LoginActivity.class));
                      getActivity().finish();
                 } catch (JSONException e) {

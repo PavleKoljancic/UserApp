@@ -1,8 +1,12 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
     <style name="Base.Theme.UserApp" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowSplashScreenBackground">@color/white</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_inset</item>
+
 
 
     </style>
@@ -18,5 +22,4 @@
         <item name="cornerSizeTopLeft">20dp</item>
         <item name="cornerSizeBottomRight">20dp</item>
     </style>
-
 </resources>

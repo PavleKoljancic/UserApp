@@ -9,7 +9,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.userapp.R;
+import com.example.userapp.token.TokenManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+
+import org.json.JSONException;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -27,8 +30,13 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        try {
+            TokenManager.setToken(null);
+        } catch (JSONException e) {
 
-         progressIndicator =findViewById(R.id.progressLogin);
+        }
+
+        progressIndicator =findViewById(R.id.progressLogin);
          informText= findViewById(R.id.loginInformText);
          passwordEditText = findViewById(R.id.passwordField);
          emailEditText = findViewById(R.id.emialField);

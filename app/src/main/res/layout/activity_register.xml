@@ -30,17 +30,30 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/passwordFieldReg"
+        android:id="@+id/passwordFieldReg1"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
         android:ems="10"
-        android:hint="Password"
+        android:hint="Lozinka"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/emialFieldReg" />
+
+    <EditText
+        android:id="@+id/passwordFieldReg2"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint="Ponovite lozinku"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordFieldReg1" />
 
     <EditText
         android:id="@+id/emialFieldReg"
@@ -111,7 +124,7 @@
         android:text="Registracija"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordFieldReg" />
+        app:layout_constraintTop_toBottomOf="@+id/passwordFieldReg2" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

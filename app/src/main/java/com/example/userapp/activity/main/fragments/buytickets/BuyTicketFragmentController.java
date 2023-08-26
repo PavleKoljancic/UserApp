@@ -30,88 +30,72 @@ public class BuyTicketFragmentController extends AbstractViewController {
     }
 
     void loadTickets() {
-        Handler handler = new Handler(handlerThread.getLooper());
-        buyTicketFragment.loadData.setVisibility(View.VISIBLE);
-        buyTicketFragment.infoText.setVisibility(View.INVISIBLE);
-        handler.post(() -> {
+        if (buyTicketFragment.viewCreated) {
+            Handler handler = new Handler(handlerThread.getLooper());
+            setLoadingUI();
+            handler.post(() -> {
 
-            try {
-                ticketDataModel.setTickets(ticketsApiDecorator.getTickets());
-                buyTicketFragment.getActivity().runOnUiThread(() -> displayTickets());
+                try {
+                    ticketDataModel.setTickets(ticketsApiDecorator.getTickets());
+                    if(buyTicketFragment.getActivity()!=null)
+                    buyTicketFragment.getActivity().runOnUiThread(() -> displayTicketsUi());
 
-            } catch (IOException e) {
-                buyTicketFragment.getActivity().runOnUiThread(() -> {
-                    buyTicketFragment.infoText.setText("Desila se greška pri dobijanju podataka");
-                    buyTicketFragment.infoText.setVisibility(View.VISIBLE);
-                });
-            } finally {
-                buyTicketFragment.getActivity().runOnUiThread(() -> {
-                    buyTicketFragment.loadData.setVisibility(View.INVISIBLE);
-                    buyTicketFragment.swipeRefreshLayout.setRefreshing(false);
-                });
-
-            }
-
-        });
-
-    }
-
-    void displayTickets() {
-        if (this.buyTicketFragment.ticketsViewAdapter == null) {
-            buyTicketFragment.ticketsViewAdapter = new TicketsViewAdapter(ticketDataModel.getTickets());
-            buyTicketFragment.ticketsViewAdapter.setOnClickListener(new TicketsViewAdapter.OnClickListener() {
-                @Override
-                public void onClick(TicketType ticketType) {
-
-                    onClickInner(ticketType);
-
+                } catch (IOException e) {
+                    if(buyTicketFragment.getActivity()!=null)
+                    buyTicketFragment.getActivity().runOnUiThread(() -> {
+                        setInfoTextUi("Desila se greška pri dobijanju podataka");
+                    });
+                } finally {
+                    if(buyTicketFragment.getActivity()!=null)
+                    buyTicketFragment.getActivity().runOnUiThread(() -> {
+                        setNotLoadingUi();
+                    });
 
                 }
+
             });
-            buyTicketFragment.recyclerView.setAdapter(buyTicketFragment.ticketsViewAdapter);
-        } else {
-            buyTicketFragment.ticketsViewAdapter.setTickets(ticketDataModel.getTickets());
-            buyTicketFragment.ticketsViewAdapter.notifyDataSetChanged();
-            if (buyTicketFragment.recyclerView.getAdapter() == null)
-                buyTicketFragment.recyclerView.setAdapter(buyTicketFragment.ticketsViewAdapter);
         }
     }
 
+
     private void sendRequestForTicket(TicketType ticketType) {
-        buyTicketFragment.loadData.setVisibility(View.VISIBLE);
-        buyTicketFragment.infoText.setText("Slanje zahtjeva za kartu");
-        buyTicketFragment.infoText.setVisibility(View.VISIBLE);
-        Handler handler = new Handler(handlerThread.getLooper());
+        if (buyTicketFragment.viewCreated) {
 
-        handler.post(() -> {
+            setInfoTextUi("Slanje zahtjeva za kartu");
+            setLoadingUI();
+            Handler handler = new Handler(handlerThread.getLooper());
 
-
-            try {
-                String response = ticketsApiDecorator.sendTicketRequest(ticketType);
-                buyTicketFragment.getActivity().runOnUiThread(() -> {
-                    if("Insufficient funds".equals(response))
-                    buyTicketFragment.infoText.setText("Nedovoljno kredita.");
-                    else if("Requested Ticket not inUse".equals(response))
-                        buyTicketFragment.infoText.setText("Zahtjevana karta nije dostupna.");
-                    else if("Successfully added request".equals(response))
-                        buyTicketFragment.infoText.setText("Zahtjev za kartu je poslat na obradu.");
-                    else if("Ticked Request Processed and Ticket bought".equals(response))
-                        buyTicketFragment.infoText.setText("Karta kupljena.");
-                    else
-                        buyTicketFragment.infoText.setText("Desila se neočekivana greška!");
-
-                });
-            } catch (JSONException | IOException e) {
-                buyTicketFragment.infoText.setText("Desila se greška pri slanju zahtjeva.");
-            } finally {
-                buyTicketFragment.getActivity().runOnUiThread(() ->
-                        buyTicketFragment.loadData.setVisibility(View.INVISIBLE)
+            handler.post(() -> {
 
 
-                );
-            }
-        });
+                try {
+                    String response = ticketsApiDecorator.sendTicketRequest(ticketType);
+                    if(buyTicketFragment.getActivity()!=null)
+                    buyTicketFragment.getActivity().runOnUiThread(() -> {
+                        if ("Insufficient funds".equals(response))
+                            setInfoTextUi("Nedovoljno kredita.");
+                        else if ("Requested Ticket not inUse".equals(response))
+                            setInfoTextUi("Zahtjevana karta nije dostupna.");
+                        else if ("Successfully added request".equals(response))
+                            setInfoTextUi("Zahtjev za kartu je poslat na obradu.");
+                        else if ("Ticked Request Processed and Ticket bought".equals(response))
+                            setInfoTextUi("Karta kupljena.");
+                        else
+                            setInfoTextUi("Desila se neočekivana greška!");
 
+                    });
+                } catch (JSONException | IOException e) {
+                    setInfoTextUi("Desila se greška pri slanju zahtjeva.");
+                } finally {
+                    if (buyTicketFragment.getActivity() != null)
+                        buyTicketFragment.getActivity().runOnUiThread(() ->
+                                buyTicketFragment.loadData.setVisibility(View.INVISIBLE)
+
+
+                        );
+                }
+            });
+        }
     }
 
     private void onClickInner(TicketType ticketType) {
@@ -135,5 +119,49 @@ public class BuyTicketFragmentController extends AbstractViewController {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void setInfoTextUi(String text) {
+        if (buyTicketFragment.viewCreated) {
+            buyTicketFragment.infoText.setText(text);
+            buyTicketFragment.infoText.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setNotLoadingUi() {
+        if (buyTicketFragment.viewCreated) {
+            buyTicketFragment.loadData.setVisibility(View.INVISIBLE);
+            buyTicketFragment.swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    private void setLoadingUI() {
+        if (buyTicketFragment.viewCreated) {
+            buyTicketFragment.loadData.setVisibility(View.VISIBLE);
+            buyTicketFragment.infoText.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    void displayTicketsUi() {
+        if (buyTicketFragment.viewCreated) {
+            if (this.buyTicketFragment.ticketsViewAdapter == null) {
+                buyTicketFragment.ticketsViewAdapter = new TicketsViewAdapter(ticketDataModel.getTickets());
+                buyTicketFragment.ticketsViewAdapter.setOnClickListener(new TicketsViewAdapter.OnClickListener() {
+                    @Override
+                    public void onClick(TicketType ticketType) {
+
+                        onClickInner(ticketType);
+
+
+                    }
+                });
+                buyTicketFragment.recyclerView.setAdapter(buyTicketFragment.ticketsViewAdapter);
+            } else {
+                buyTicketFragment.ticketsViewAdapter.setTickets(ticketDataModel.getTickets());
+                buyTicketFragment.ticketsViewAdapter.notifyDataSetChanged();
+                if (buyTicketFragment.recyclerView.getAdapter() == null)
+                    buyTicketFragment.recyclerView.setAdapter(buyTicketFragment.ticketsViewAdapter);
+            }
+        }
     }
 }

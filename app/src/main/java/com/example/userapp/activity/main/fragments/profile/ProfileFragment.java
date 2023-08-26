@@ -42,14 +42,18 @@ public class ProfileFragment extends Fragment {
     LinearProgressIndicator loadData;
     SwipeRefreshLayout swipeRefreshLayout;
     boolean dataFetched;
+
+    boolean viewCreated;
     public ProfileFragment() {
         // Required empty public constructor
         profileFragmentController= new ProfileFragmentController(this);
         dataFetched = false;
+        viewCreated = false;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         profilePicture=getView().findViewById(R.id.profile_picture);
 
         nameAndLastname=getView().findViewById(R.id.name_and_lastname);
@@ -63,25 +67,27 @@ public class ProfileFragment extends Fragment {
 
 
         swipeRefreshLayout = getView().findViewById(R.id.swiperefreshProfile);
+        swipeRefreshLayout.setRefreshing(false);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 profileFragmentController.reloadData();
             }
         });
+        viewCreated=true;
 
-        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     public void onStart() {
+        super.onStart();
         profileFragmentController.subscribeToUserDataModel();
         if(!dataFetched) {
-            profileFragmentController.loadInitUi();
+            profileFragmentController.loadInit();
         dataFetched=true;
         }
         else profileFragmentController.displayExistingData();
-        super.onStart();
+
     }
 
     @Override
@@ -98,7 +104,23 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        swipeRefreshLayout.setRefreshing(false);
+
         profileFragmentController.unsubscribeToUserDataModel();
+
         super.onDestroyView();
+    }
+
+    @Override
+    public void onPause() {
+        viewCreated=false;
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewCreated=true;
+
     }
 }

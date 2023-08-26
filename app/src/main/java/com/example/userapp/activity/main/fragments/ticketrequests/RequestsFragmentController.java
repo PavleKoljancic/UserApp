@@ -28,82 +28,19 @@ public class RequestsFragmentController extends AbstractViewController {
         this.requestsApiDecorator = new RequestsApiDecorator();
     }
 
-    public void displayRequests() {
 
-        requestsFragment.noResponseText.setVisibility(View.INVISIBLE);
-        requestsFragment.responseRV.setVisibility(View.INVISIBLE);
-        requestDataModel.setResponseSelected(false);
-        if(requestDataModel.getUserTicketRequest().size()>0)
-        {
-            requestsFragment.noRequestsText.setVisibility(View.INVISIBLE);
-            if (requestsFragment.requestViewAdapter == null) {
-                requestsFragment.requestViewAdapter = new RequestViewAdapter(requestDataModel.getAllTickets(),requestDataModel.getUserTicketRequest());
-                requestsFragment.requestRV.setAdapter(requestsFragment.requestViewAdapter);
-            } else {
-
-                    requestsFragment.requestViewAdapter.setData(requestDataModel.getAllTickets(),requestDataModel.getUserTicketRequest());
-                    requestsFragment.requestViewAdapter.notifyDataSetChanged();
-
-                if (requestsFragment.requestRV.getAdapter() == null)
-                    requestsFragment.requestRV.setAdapter(requestsFragment.requestViewAdapter);
-            }
-
-            requestsFragment.requestRV.setVisibility(View.VISIBLE);
-        }
-       else { requestsFragment.noRequestsText.setVisibility(View.VISIBLE);
-                requestsFragment.requestRV.setVisibility(View.INVISIBLE);
-       }
-    }
-
-    public void displayResponse() {
-        requestsFragment.noRequestsText.setVisibility(View.INVISIBLE);
-        requestDataModel.setResponseSelected(true);
-        requestsFragment.requestRV.setVisibility(View.INVISIBLE);
-        if (requestDataModel.getUserTicketResponses().size() > 0) {
-            requestsFragment.noResponseText.setVisibility(View.INVISIBLE);
-            if (requestsFragment.responseViewAdapter == null) {
-                requestsFragment.responseViewAdapter = new ResponseViewAdapter(requestDataModel.getUserTicketResponses());
-                requestsFragment.responseRV.setAdapter(requestsFragment.responseViewAdapter);
-            } else {
-
-                    requestsFragment.responseViewAdapter.setData(requestDataModel.getUserTicketResponses());
-                    requestsFragment.responseViewAdapter.notifyDataSetChanged();
-
-                if (requestsFragment.responseRV.getAdapter() == null)
-                    requestsFragment.responseRV.setAdapter(requestsFragment.responseViewAdapter);
-            }
-            requestsFragment.responseRV.setVisibility(View.VISIBLE);
-        } else {
-            requestsFragment.noResponseText.setVisibility(View.VISIBLE);
-            requestsFragment.responseRV.setVisibility(View.INVISIBLE);
-        }
-    }
-
-
-    private void setUILoading() {
-
-        requestsFragment.loadData.setVisibility(View.VISIBLE);
-        requestsFragment.infoText.setText("Učitavnje podataka");
-    }
-
-    private void cleanUiLoading() {
-        requestsFragment.loadData.setVisibility(View.INVISIBLE);
-        requestsFragment.swipeRefreshLayout.setRefreshing(false);
-        requestsFragment.infoText.setText("");
-        displaySelected();
-    }
 
      void displaySelected()
-    {
+    {  if(requestsFragment.viewCreated){
         if(requestDataModel.isResponseSelected())
-            displayResponse();
-        else displayRequests();
+            displayResponseUi();
+        else displayRequestsUi();}
     }
 
     public void fetchData() {
 
         Handler handler = new Handler(handlerThread.getLooper());
-        setUILoading();
+        setLoadingUi();
         handler.post(() -> {
 
             boolean dataFetchNoError = false;
@@ -119,17 +56,89 @@ public class RequestsFragmentController extends AbstractViewController {
                 dataFetchNoError = false;
             } finally {
                 final boolean noError = dataFetchNoError;
+                if(requestsFragment.getActivity()!=null)
                 requestsFragment.getActivity().runOnUiThread(() -> {
-                    cleanUiLoading();
+                    cleanLoadingUi();
                     if (!noError)
-
-                        requestsFragment.infoText.setText("Desila se greška pri učitavnja podataka");
+                        setInfoTextUi("Desila se greška pri učitavnja podataka");
                 });
             }
 
 
         });
 
+    }
+
+    private void setInfoTextUi(String text) {
+        requestsFragment.infoText.setText(text);
+    }
+
+    public void displayRequestsUi() {
+        if(requestsFragment.viewCreated) {
+            requestsFragment.noResponseText.setVisibility(View.INVISIBLE);
+            requestsFragment.responseRV.setVisibility(View.INVISIBLE);
+            requestDataModel.setResponseSelected(false);
+            if(requestDataModel.getUserTicketRequest().size()>0)
+            {
+                requestsFragment.noRequestsText.setVisibility(View.INVISIBLE);
+                if (requestsFragment.requestViewAdapter == null) {
+                    requestsFragment.requestViewAdapter = new RequestViewAdapter(requestDataModel.getAllTickets(),requestDataModel.getUserTicketRequest());
+                    requestsFragment.requestRV.setAdapter(requestsFragment.requestViewAdapter);
+                } else {
+
+                    requestsFragment.requestViewAdapter.setData(requestDataModel.getAllTickets(),requestDataModel.getUserTicketRequest());
+                    requestsFragment.requestViewAdapter.notifyDataSetChanged();
+
+                    if (requestsFragment.requestRV.getAdapter() == null)
+                        requestsFragment.requestRV.setAdapter(requestsFragment.requestViewAdapter);
+                }
+
+                requestsFragment.requestRV.setVisibility(View.VISIBLE);
+            }
+            else { requestsFragment.noRequestsText.setVisibility(View.VISIBLE);
+                requestsFragment.requestRV.setVisibility(View.INVISIBLE);
+            }}
+    }
+
+    public void displayResponseUi() {
+        if(requestsFragment.viewCreated){
+            requestsFragment.noRequestsText.setVisibility(View.INVISIBLE);
+            requestDataModel.setResponseSelected(true);
+            requestsFragment.requestRV.setVisibility(View.INVISIBLE);
+            if (requestDataModel.getUserTicketResponses().size() > 0) {
+                requestsFragment.noResponseText.setVisibility(View.INVISIBLE);
+                if (requestsFragment.responseViewAdapter == null) {
+                    requestsFragment.responseViewAdapter = new ResponseViewAdapter(requestDataModel.getUserTicketResponses());
+                    requestsFragment.responseRV.setAdapter(requestsFragment.responseViewAdapter);
+                } else {
+
+                    requestsFragment.responseViewAdapter.setData(requestDataModel.getUserTicketResponses());
+                    requestsFragment.responseViewAdapter.notifyDataSetChanged();
+
+                    if (requestsFragment.responseRV.getAdapter() == null)
+                        requestsFragment.responseRV.setAdapter(requestsFragment.responseViewAdapter);
+                }
+                requestsFragment.responseRV.setVisibility(View.VISIBLE);
+            } else {
+                requestsFragment.noResponseText.setVisibility(View.VISIBLE);
+                requestsFragment.responseRV.setVisibility(View.INVISIBLE);
+            }}
+    }
+
+
+    private void setLoadingUi() {
+        if(requestsFragment.viewCreated){
+            requestsFragment.loadData.setVisibility(View.VISIBLE);
+            setInfoTextUi("Učitavnje podataka");
+        }
+    }
+
+    private void cleanLoadingUi() {
+        if(requestsFragment.viewCreated){
+            requestsFragment.loadData.setVisibility(View.INVISIBLE);
+            requestsFragment.swipeRefreshLayout.setRefreshing(false);
+            setInfoTextUi("");
+            displaySelected();}
     }
 
 

@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import android.widget.EditText;
 
@@ -13,9 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 
 import com.example.userapp.activity.AbstractViewController;
-import com.example.userapp.activity.main.fragments.buytickets.TicketsViewAdapter;
 import com.example.userapp.datamodel.user.UserDataModel;
-import com.example.userapp.models.TicketType;
 import com.example.userapp.models.User;
 
 import org.json.JSONException;
@@ -32,7 +29,7 @@ import okhttp3.ResponseBody;
 public class DocumentsFragmentController extends AbstractViewController {
 
     DocumentsFragment documentsFragment;
-    ActivityResultLauncher<String> pdfPickerLauncher;
+
     ArrayList<String> documentNames;
     DocumentsApiDecorator documentsApiDecorator;
 
@@ -42,25 +39,14 @@ public class DocumentsFragmentController extends AbstractViewController {
         super("DOCUMENTS FRAGMENT CONTROLLER HANDLER THREAD");
         this.documentsFragment = documentsFragment;
         this.documentsApiDecorator = new DocumentsApiDecorator();
-        pdfPickerLauncher = this.documentsFragment.registerForActivityResult(
-                new ActivityResultContracts.GetContent(),
-                uri -> {
-                    if (uri != null) {
 
-                        createUploadDialog(uri);
-
-                    }
-                }
-        );
         documentNames = new ArrayList<>(3);
         userDataModel = UserDataModel.getInstance();
     }
 
-    void launchPdfPicker() {
-        pdfPickerLauncher.launch("application/pdf");
-    }
 
-    private void createUploadDialog(Uri uri) {
+
+     void createUploadDialog(Uri uri) {
         EditText inputEditTextField = new EditText(documentsFragment.getContext());
         AlertDialog dialog = new AlertDialog.Builder(documentsFragment.getContext())
                 .setTitle("Naziv dokumenta")
@@ -87,7 +73,7 @@ public class DocumentsFragmentController extends AbstractViewController {
             try {
 
                 ByteBuffer buffer = uriToByteBuffer(uri);
-                if(documentsApiDecorator.uploadFile(buffer, documentName))
+                if (documentsApiDecorator.uploadFile(buffer, documentName))
                     fetchData();
 
             } catch (JSONException e) {
@@ -95,36 +81,11 @@ public class DocumentsFragmentController extends AbstractViewController {
             } catch (IOException e) {
 
             }
-            handler.sendEmptyMessage(0);
         });
 
     }
 
-    void displayDocuments() {
-        setUiLoadingFinished();
-        documentsFragment.swiperefreshDocuments.setRefreshing(false);
-        if(documentNames.size()>=3)
-            documentsFragment.uploadbtn.setVisibility(View.INVISIBLE);
-        else
-            documentsFragment.uploadbtn.setVisibility(View.VISIBLE);
-        if(this.documentNames.size()==0)
-            this.documentsFragment.documentsRv.setVisibility(View.INVISIBLE);
-        else {
-            if (this.documentsFragment.documentsViewAdapter == null) {
-                documentsFragment.documentsViewAdapter = new DocumentsViewAdapter(this.documentNames,this);
 
-                documentsFragment.documentsRv.setAdapter(documentsFragment.documentsViewAdapter);
-            } else {
-
-                    documentsFragment.documentsViewAdapter.setData(this.documentNames);
-                    documentsFragment.documentsViewAdapter.notifyDataSetChanged();
-
-                if (documentsFragment.documentsRv.getAdapter() == null)
-                    documentsFragment.documentsRv.setAdapter(documentsFragment.documentsViewAdapter);
-            }
-            this.documentsFragment.documentsRv.setVisibility(View.VISIBLE);
-        }
-    }
 
     private ByteBuffer uriToByteBuffer(Uri uri) throws IOException {
         InputStream inputsream = documentsFragment.getContext().getContentResolver().openInputStream(uri);
@@ -158,41 +119,35 @@ public class DocumentsFragmentController extends AbstractViewController {
 
 
     public void fetchData() {
-        documentsFragment.getActivity().runOnUiThread(()-> setUiLoadingProgress());
+        if(documentsFragment.getActivity()!=null)
+        documentsFragment.getActivity().runOnUiThread(() -> setLoadingProgressUi());
         Handler handler = new Handler(handlerThread.getLooper());
-        handler.post(()->{
+        handler.post(() -> {
 
             try {
                 userDataModel.updateUser(this.documentsApiDecorator.loadUser());
                 setDataFromDataModel();
-            } catch (IOException|JSONException e) {
-            }
-            finally {
-                documentsFragment.getActivity().runOnUiThread(()-> displayDocuments());
+            } catch (IOException | JSONException e) {
+            } finally {
+                if(documentsFragment.getActivity()!=null)
+                documentsFragment.getActivity().runOnUiThread(() -> displayDocumentsUi());
             }
 
         });
     }
 
-    private void setUiLoadingProgress() {
-        documentsFragment.progressIndicator.setVisibility(View.VISIBLE);
-    }
 
-    private void setUiLoadingFinished() {
-        documentsFragment.progressIndicator.setVisibility(View.INVISIBLE);
-    }
 
-     void setDataFromDataModel()
-    {
+    void setDataFromDataModel() {
         User user = userDataModel.getUser();
 
-        if(user!=null) {
+        if (user != null) {
             this.documentNames.clear();
-            if(user.getDocumentName1()!=null)
+            if (user.getDocumentName1() != null)
                 this.documentNames.add(user.getDocumentName1());
-            if(user.getDocumentName2()!=null)
+            if (user.getDocumentName2() != null)
                 this.documentNames.add(user.getDocumentName2());
-            if(user.getDocumentName3()!=null)
+            if (user.getDocumentName3() != null)
                 this.documentNames.add(user.getDocumentName3());
 
 
@@ -201,15 +156,16 @@ public class DocumentsFragmentController extends AbstractViewController {
 
     public void deleteDocument(String documentName) {
         Handler handler = new Handler(handlerThread.getLooper());
-        setUiLoadingProgress();
-        handler.post(()-> {
+        setLoadingProgressUi();
+        handler.post(() -> {
 
             try {
-                if(this.documentsApiDecorator.deleteDocument(documentName))
+                if (this.documentsApiDecorator.deleteDocument(documentName))
                     fetchData();
 
-            } catch (JSONException|IOException e) {
-                documentsFragment.getActivity().runOnUiThread(()-> setUiLoadingFinished());
+            } catch (JSONException | IOException e) {
+                if(documentsFragment.getActivity()!=null)
+                documentsFragment.getActivity().runOnUiThread(() -> setLoadingFinishedUi());
             }
 
         });
@@ -219,14 +175,13 @@ public class DocumentsFragmentController extends AbstractViewController {
     public void downloadDocument(String documentName) {
 
         Handler handler = new Handler(handlerThread.getLooper());
-        handler.post(()-> {
+        handler.post(() -> {
             try {
                 ResponseBody responseBody = documentsApiDecorator.downloadODocument(documentName);
-                if(responseBody!=null)
-                {
+                if (responseBody != null) {
                     File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                    File outPutFile = new File(downloadDir,documentName+".pdf");
-                    FileOutputStream fileOutputStream =  new FileOutputStream(outPutFile);
+                    File outPutFile = new File(downloadDir, documentName + ".pdf");
+                    FileOutputStream fileOutputStream = new FileOutputStream(outPutFile);
                     fileOutputStream.write(responseBody.bytes());
                 }
             } catch (JSONException e) {
@@ -238,5 +193,43 @@ public class DocumentsFragmentController extends AbstractViewController {
 
         });
 
+    }
+
+    void displayDocumentsUi() {
+        if (documentsFragment.viewCreated) {
+            setLoadingFinishedUi();
+            if (documentNames.size() >= 3)
+                documentsFragment.uploadbtn.setVisibility(View.INVISIBLE);
+            else
+                documentsFragment.uploadbtn.setVisibility(View.VISIBLE);
+            if (this.documentNames.size() == 0)
+                this.documentsFragment.documentsRv.setVisibility(View.INVISIBLE);
+            else {
+                if (this.documentsFragment.documentsViewAdapter == null) {
+                    documentsFragment.documentsViewAdapter = new DocumentsViewAdapter(this.documentNames, this);
+
+                    documentsFragment.documentsRv.setAdapter(documentsFragment.documentsViewAdapter);
+                } else {
+
+                    documentsFragment.documentsViewAdapter.setData(this.documentNames);
+                    documentsFragment.documentsViewAdapter.notifyDataSetChanged();
+
+                    if (documentsFragment.documentsRv.getAdapter() == null)
+                        documentsFragment.documentsRv.setAdapter(documentsFragment.documentsViewAdapter);
+                }
+                this.documentsFragment.documentsRv.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private void setLoadingProgressUi() {
+        if (documentsFragment.viewCreated)
+            documentsFragment.progressIndicator.setVisibility(View.VISIBLE);
+    }
+
+    private void setLoadingFinishedUi() {
+        if (documentsFragment.viewCreated)
+            documentsFragment.progressIndicator.setVisibility(View.INVISIBLE);
+            documentsFragment.swiperefreshDocuments.setRefreshing(false);
     }
 }

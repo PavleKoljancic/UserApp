@@ -29,12 +29,13 @@ public class NoPictureActivity extends AppCompatActivity {
     ActivityResultLauncher<CropImageContractOptions> cropImage;
     Bitmap cropped;
     NoPictureController noPictureController;
+    boolean backprassed;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_no_picture);
          noPictureController = new NoPictureController(this);
-
+        backprassed=false;
         imageView = findViewById(R.id.userImageUpload);
         fromCammera =findViewById(R.id.fromCammera);
         fromGalaery = findViewById(R.id.fromGalleryBtn);
@@ -86,5 +87,11 @@ public class NoPictureActivity extends AppCompatActivity {
     protected void onDestroy() {
         this.noPictureController.quitHandlerThread();
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        backprassed=true;
+        super.onBackPressed();
     }
 }

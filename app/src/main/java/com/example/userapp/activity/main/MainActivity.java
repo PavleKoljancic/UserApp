@@ -64,4 +64,9 @@ public class MainActivity extends AppCompatActivity {
         documentsFragment.quitHandlerThread();
         super.onDestroy();
     }
+
+    @Override
+    public void onBackPressed() {
+
+    }
 }
