@@ -41,15 +41,19 @@ public class ProfileFragment extends Fragment {
     CircularProgressIndicator loadProfilePicture;
     LinearProgressIndicator loadData;
     SwipeRefreshLayout swipeRefreshLayout;
+    Button qrGen;
+    ImageView qrDisplay;
     boolean dataFetched;
+
 
     boolean viewCreated;
     public ProfileFragment() {
         // Required empty public constructor
         profileFragmentController= new ProfileFragmentController(this);
-        dataFetched = false;
+        dataFetched = profileFragmentController.checkData();
         viewCreated = false;
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -60,7 +64,9 @@ public class ProfileFragment extends Fragment {
         credit=getView().findViewById(R.id.credit);
         informText=getView().findViewById(R.id.noTicketsText);
         ticketsRecyclerView=getView().findViewById(R.id.userTicketRV);
-        ticketsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        qrGen = getView().findViewById(R.id.qrbutton);
+        qrDisplay = getView().findViewById(R.id.qrdisplay);
+        ticketsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         userTicketsViewAdapter=null;
         loadProfilePicture = getView().findViewById(R.id.loadPictureProgress);
         loadData = getView().findViewById(R.id.loadingData);
@@ -76,6 +82,13 @@ public class ProfileFragment extends Fragment {
         });
         viewCreated=true;
 
+        qrGen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                profileFragmentController.qrClikced(qrDisplay);
+            }
+        });
+
     }
 
     @Override
@@ -84,7 +97,7 @@ public class ProfileFragment extends Fragment {
         profileFragmentController.subscribeToUserDataModel();
         if(!dataFetched) {
             profileFragmentController.loadInit();
-        dataFetched=true;
+            dataFetched=true;
         }
         else profileFragmentController.displayExistingData();
 

@@ -22,4 +22,8 @@ public abstract class UserApiDecorator {
         User temp = api.getUser(TokenManager.getInstance().getId(), TokenManager.bearer() + TokenManager.getInstance().getToken()).execute().body();
         return  temp;
     }
+
+    public String loadUserKey() throws JSONException, IOException {
+       return api.getUserKey(TokenManager.getInstance().getId(), TokenManager.bearer() + TokenManager.getInstance().getToken()).execute().body();
+    }
 }

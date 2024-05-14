@@ -8,6 +8,9 @@ import com.example.userapp.activity.AbstractViewController;
 import com.example.userapp.activity.main.MainActivity;
 import com.example.userapp.activity.nopicture.NoPictureActivity;
 import com.example.userapp.activity.register.RegisterActivity;
+import com.example.userapp.datamodel.interactions.InteractionsDataModel;
+import com.example.userapp.datamodel.ticket.TicketDataModel;
+import com.example.userapp.token.TokenManager;
 
 
 import org.json.JSONException;
@@ -52,7 +55,10 @@ class LoginController  extends AbstractViewController {
         try {
             loginResult =this.loginModel.attemptLogin(emial,password);
             if(loginResult)
-                 this.userDataModel.updateUser(loginModel.loadUser());
+            {
+                this.userDataModel.updateUser(loginModel.loadUser(), loginModel.loadUserKey());
+            }
+
         } catch (IOException|JSONException e ) {
             loginFailure =true;
         }
@@ -100,4 +106,19 @@ class LoginController  extends AbstractViewController {
     }
 
 
+    public void loadCacheIfPresent() {
+        if(TokenManager.loadTokenFromFile())
+        {
+            userDataModel.loadUserDataModelFromFile();
+            if(userDataModel.getUser()!=null)
+            {
+                if(userDataModel.getUser().getPictureHash()!=null)
+                    startMainActivity();
+                else startNoPictureActivity();
+                TicketDataModel.getInstance().loadFromFile();
+                InteractionsDataModel.getInstance().loadFromFile();
+
+            }
+        }
+    }
 }

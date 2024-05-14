@@ -10,8 +10,7 @@ import com.example.userapp.activity.login.LoginActivity;
 
 import com.example.userapp.activity.main.MainActivity;
 import com.example.userapp.activity.nopicture.NoPictureActivity;
-import com.example.userapp.models.TicketRequest;
-import com.example.userapp.models.TicketRequestResponse;
+import com.example.userapp.models.Document;
 import com.example.userapp.models.User;
 import com.example.userapp.models.UserTicket;
 import com.example.userapp.models.UserWithPassword;
@@ -21,6 +20,9 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RegisterController extends AbstractViewController implements UserDataChangeSubscriber {
     private RegisterActivity registerActivity;
@@ -37,13 +39,37 @@ public class RegisterController extends AbstractViewController implements UserDa
 
     void onRegister()
     {
-        if(checkFields()) {
-            if(registerActivity.password.getText().toString().equals(registerActivity.passwordConfirm.getText().toString()))
-            {registerActivity.progressIndicator.setVisibility(View.VISIBLE);
-            register(userWithPasswordFromFields());}
-            else registerActivity.informText.setText("Lozinke se ne poklapaju");
+        if(!checkFields()) {
+
+            registerActivity.informText.setText("Polja ne smiju biti prazna");
+            return;
         }
-        else registerActivity.informText.setText("Polja ne smiju biti prazna");
+        if(!(registerActivity.password.getText().toString().equals(registerActivity.passwordConfirm.getText().toString())))
+        {
+            registerActivity.informText.setText("Lozinke se ne poklapaju");
+            return ;
+
+
+        }
+        Pattern mailPattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
+        Matcher mailMatcher = mailPattern.matcher(registerActivity.email.getText());
+
+        if(!mailMatcher.matches())
+        {
+            registerActivity.informText.setText("Unesite validnu e-mail adresu");
+            return;
+        }
+
+        Pattern passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{6,}$");
+        Matcher passwordMatcher = passwordPattern.matcher(registerActivity.password.getText());
+        if(!passwordMatcher.matches())
+        {
+            registerActivity.informText.setText("Lozinka mora da bude minimalno 6 karaktera, da sadrži mala i velika slova, broj i  specijalni znak");
+            return;
+        }
+
+        registerActivity.progressIndicator.setVisibility(View.VISIBLE);
+        register(userWithPasswordFromFields());
     }
     void register(UserWithPassword userWithPassword) {   //Start UI
 
@@ -75,7 +101,7 @@ public class RegisterController extends AbstractViewController implements UserDa
 
                 if (isLoggedIn) {
                     try {
-                        this.userDataModel.updateUser(this.registerApiDecorator.loadUser());
+                        this.userDataModel.updateUser(this.registerApiDecorator.loadUser(),this.registerApiDecorator.loadUserKey());
                         registerActivity.runOnUiThread(()-> registerActivity.progressIndicator.setVisibility(View.INVISIBLE));
                     } catch (IOException | JSONException e) {
 
@@ -120,7 +146,9 @@ public class RegisterController extends AbstractViewController implements UserDa
 
 
     @Override
-    public void onUserDataChanged(User user, HashSet<UserTicket> userTickets, HashSet<TicketRequestResponse> ticketRequestResponses, HashSet<TicketRequest> unprocessedTicketRequest, Bitmap userProfilePicture) {
+    public void onUserDataChanged(User user, HashSet<UserTicket> userTickets,
+                                  Bitmap userProfilePicture,
+                                  List<Document> userDocuments) {
         if (user != null) {
             this.userDataModel.unsubscribeToDataChange(this);
             this.registerActivity.runOnUiThread(() -> {

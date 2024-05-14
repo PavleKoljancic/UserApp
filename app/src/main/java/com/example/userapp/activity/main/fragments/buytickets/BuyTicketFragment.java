@@ -37,7 +37,7 @@ public class BuyTicketFragment extends Fragment {
     public BuyTicketFragment() {
         buyTicketFragmentController = new BuyTicketFragmentController(this);
         ticketsViewAdapter = null;
-        dataFetched = false;
+        dataFetched = this.buyTicketFragmentController.checkData();
         viewCreated=false;
 
     }

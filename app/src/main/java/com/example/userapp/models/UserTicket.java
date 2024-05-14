@@ -1,5 +1,6 @@
 package com.example.userapp.models;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 
@@ -12,8 +13,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
-public class UserTicket {
+public class UserTicket implements Serializable {
 
+    private Integer transaction_Id;
     private Timestamp validUntilDate;
     private Integer usage;
     private TicketType type;

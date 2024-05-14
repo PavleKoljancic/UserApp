@@ -11,7 +11,8 @@
     android:focusable="true"
     android:focusableInTouchMode="false"
     android:focusedByDefault="false"
-    app:strokeWidth="2dp">
+    app:strokeWidth="1dp"
+>
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -11,31 +11,39 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.userapp.R;
-import com.example.userapp.models.TicketRequestResponse;
+import com.example.userapp.models.Document;
+import com.example.userapp.models.DocumentType;
 
+import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 
 public class DocumentsViewAdapter extends RecyclerView.Adapter< DocumentsViewAdapter.ViewHolder>{
 
 
-    List<String> documentNames;
+    List<Document> documents;
     DocumentsFragmentController documentsFragmentController;
-    public DocumentsViewAdapter(Collection<String> documentNames, DocumentsFragmentController documentsFragmentController) {
+    public DocumentsViewAdapter(Collection<Document> documentNames, DocumentsFragmentController documentsFragmentController) {
 
-        this.documentNames = new ArrayList<String>();
-        this.documentNames.addAll(documentNames);
+        this.documents = new ArrayList<Document>();
+        this.documents.addAll(documentNames);
+        Collections.reverse(this.documents);
         this.documentsFragmentController = documentsFragmentController;
 
     }
 
 
-    public void setData(Collection<String> responses) {
+    public void setData(Collection<Document> responses) {
 
-        this.documentNames.clear();
-        this.documentNames.addAll(responses);
+        this.documents.clear();
+        this.documents.addAll(responses);
+        Collections.reverse(this.documents);
 
     }
 
@@ -51,20 +59,34 @@ public class DocumentsViewAdapter extends RecyclerView.Adapter< DocumentsViewAda
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            String documentName = documentNames.get(position);
-            holder.documentNameTextview.setText(documentName);
-            holder.documentName=documentName;
-            holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    documentsFragmentController.deleteDocument(holder.documentName);
-                }
-            });
+            Document doc = documents.get(position);
+            holder.documentNameTextview.setText(doc.getDocumentType().getName());
+            if(doc.getComment()!=null)
+        holder.documnetCommentTextView.setText("Komentar:"+doc.getComment());
+        else holder.documnetCommentTextView.setText("Komentara još nema.");
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/YYYY");
+
+
+        holder.documnetValidityTextView.setVisibility(View.GONE);
+        if(doc.getSupervisorId()==null)
+
+            holder.documentStateTextView.setText("Čeka odobrenje.");
+        else if(doc.getApproved()) {
+            holder.documentStateTextView.setText("Dokument je odobren.");
+            holder.documnetValidityTextView.setVisibility(View.VISIBLE);
+            holder.documnetValidityTextView.setText("Važi do:"+simpleDateFormat.format(doc.getDocumentType().getValidUntilDate()));
+        }
+            else
+            holder.documentStateTextView.setText("Dokument je odbačen.");
+
+
+
 
         holder.downloadbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                documentsFragmentController.downloadDocument(holder.documentName);
+                documentsFragmentController.downloadDocument(doc);
             }
         });
 
@@ -75,25 +97,45 @@ public class DocumentsViewAdapter extends RecyclerView.Adapter< DocumentsViewAda
     @Override
     public int getItemCount() {
 
-        return this.documentNames.size();
+        return this.documents.size();
     }
 
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-       public String documentName;
+
         public TextView documentNameTextview;
+        public TextView documnetCommentTextView;
+
+        public TextView documentStateTextView;
+
+        public TextView documnetValidityTextView;
 
         public Button downloadbtn;
-        public  Button deleteBtn;
+        public Button showComment;
+
 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            documentNameTextview = itemView.findViewById(R.id.DocumentName);
-            downloadbtn = itemView.findViewById(R.id.downloadbtn);
-            deleteBtn = itemView.findViewById(R.id.deleteBtn);
+            documentNameTextview = itemView.findViewById(R.id.documentName);
+            documnetCommentTextView = itemView.findViewById(R.id.documentComment);
+            documentStateTextView = itemView.findViewById(R.id.documentState);
+            documnetValidityTextView = itemView.findViewById(R.id.documentValidityDate);
+
+            downloadbtn = itemView.findViewById(R.id.downloadBtn);
+            showComment = itemView.findViewById(R.id.showCmnt);
+
+            showComment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(documnetCommentTextView.getVisibility()==View.GONE)
+                        documnetCommentTextView.setVisibility(View.VISIBLE);
+                    else documnetCommentTextView.setVisibility(View.GONE);
+                }
+            });
+
 
         }
 

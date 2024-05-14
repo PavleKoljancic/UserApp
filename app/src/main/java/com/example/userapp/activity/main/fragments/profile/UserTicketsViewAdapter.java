@@ -58,7 +58,7 @@ public class UserTicketsViewAdapter extends RecyclerView.Adapter< UserTicketsVie
             stringBuilder.append(", broj preostalih vožnji:"+userTickets.get(position).getUsage());
         else {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            stringBuilder.append("koja važi do " + simpleDateFormat.format(userTickets.get(position).getValidUntilDate()));
+            stringBuilder.append(" koja važi do " + simpleDateFormat.format(userTickets.get(position).getValidUntilDate()));
         }
         holder.ticketType.setText(stringBuilder.toString());
     }

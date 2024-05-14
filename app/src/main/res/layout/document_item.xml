@@ -1,71 +1,91 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/documentCard"
     style="?attr/materialCardViewElevatedStyle"
-    android:layout_width="wrap_content"
+    android:id="@+id/documentCard"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
     android:layout_margin="8dp"
-    android:checkable="true"
-    android:clickable="false"
-    android:focusable="true"
-    android:focusableInTouchMode="false"
+    app:strokeWidth="1dp"
+>
 
-    android:focusedByDefault="false"
-    app:shapeAppearance="@style/ShapeAppearance.MyApp.MediumComponent.Cut"
-    app:strokeColor="#599C27B0"
-    app:strokeWidth="2dp">
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/DocumentName"
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Title, secondary and supporting text -->
+            <TextView
+                android:id="@+id/documentName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Title"
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+            <TextView
+                android:id="@+id/documentState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Seccondatz Text"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?android:attr/textColorSecondary" />
+
+            <TextView
+                android:id="@+id/documentValidityDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Suporting Text"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?android:attr/textColorSecondary" />
+
+            <TextView
+                android:id="@+id/documentComment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Suporting Text"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?android:attr/textColorSecondary"
+                android:visibility="gone" />
+
+
+        </LinearLayout>
+
+        <!-- Buttons -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Potvrda o redovnom školvanju"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_margin="8dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/downloadbtn"
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginBottom="5dp"
-            android:backgroundTint="#4CAF50"
-            android:text="Sačuvaj"
-            app:icon="@drawable/download"
-            app:iconGravity="end"
-            app:iconPadding="0dp"
-            app:iconSize="25dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/downloadBtn"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="Sačuvaj"
+                app:icon="@drawable/download" />
 
-        <Button
-            android:id="@+id/deleteBtn"
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="5dp"
-            android:backgroundTint="#E53935"
-            android:text="Obriši"
-            app:icon="@drawable/trashcan"
-            app:iconGravity="end"
-            app:iconPadding="0dp"
-            app:iconSize="25dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/downloadbtn"
-            app:layout_constraintTop_toBottomOf="@+id/DocumentName" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/showCmnt"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Komentar"
+                app:icon="@drawable/comment" />
+        </LinearLayout>
+
+    </LinearLayout>
+
 
 </com.google.android.material.card.MaterialCardView>

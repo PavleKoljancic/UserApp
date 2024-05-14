@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class TicketsViewAdapter extends RecyclerView.Adapter< TicketsViewAdapter.ViewHolder>{
@@ -24,13 +25,15 @@ public class TicketsViewAdapter extends RecyclerView.Adapter< TicketsViewAdapter
     private OnClickListener onClickListener;
     public TicketsViewAdapter(Collection<TicketType> tickets) {
         this.tickets = new ArrayList<TicketType>();
-        this.tickets.addAll(tickets);
+        if(tickets!=null)
+            this.tickets.addAll(tickets);
 
     }
 
     public void setTickets(Collection<TicketType> tickets) {
         this.tickets.clear();
-        this.tickets.addAll(tickets);
+        if(tickets!=null)
+            this.tickets.addAll(tickets);
 
     }
 
@@ -63,8 +66,8 @@ public class TicketsViewAdapter extends RecyclerView.Adapter< TicketsViewAdapter
         holder.price.setText("Cijena: "+tickets.get(position).getCost()+" KM");
 
         if(tickets.get(position).getNeedsDocumentaion())
-            holder.documents.setText("Dokument: "+tickets.get(position).getDocumentaionName());
-        else holder.documents.setText("Dokument: Ne zahtjeva");
+            holder.documents.setText("Dokument: "+tickets.get(position).getDocuments().stream().map(documentType -> documentType.getName()).collect(Collectors.joining(" ")));
+        else holder.documents.setText("Dokument: Ne zahtijeva");
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

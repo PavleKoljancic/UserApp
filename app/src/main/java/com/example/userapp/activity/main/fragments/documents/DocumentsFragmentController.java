@@ -5,14 +5,20 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.view.menu.MenuBuilder;
 
 import com.example.userapp.activity.AbstractViewController;
 import com.example.userapp.datamodel.user.UserDataModel;
+import com.example.userapp.models.Document;
+import com.example.userapp.models.DocumentType;
 import com.example.userapp.models.User;
 
 import org.json.JSONException;
@@ -23,63 +29,85 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 
-public class DocumentsFragmentController extends AbstractViewController {
+public class DocumentsFragmentController extends AbstractViewController  {
 
     DocumentsFragment documentsFragment;
 
-    ArrayList<String> documentNames;
+
     DocumentsApiDecorator documentsApiDecorator;
 
     UserDataModel userDataModel;
+    private List<Document> userDocuments;
+    private List<DocumentType> validDocumentTypes;
 
     DocumentsFragmentController(DocumentsFragment documentsFragment) {
         super("DOCUMENTS FRAGMENT CONTROLLER HANDLER THREAD");
         this.documentsFragment = documentsFragment;
         this.documentsApiDecorator = new DocumentsApiDecorator();
-
-        documentNames = new ArrayList<>(3);
+        this.userDocuments = new ArrayList<Document>();
+        this.validDocumentTypes = new ArrayList<DocumentType>();
         userDataModel = UserDataModel.getInstance();
+
     }
 
 
 
      void createUploadDialog(Uri uri) {
-        EditText inputEditTextField = new EditText(documentsFragment.getContext());
-        AlertDialog dialog = new AlertDialog.Builder(documentsFragment.getContext())
-                .setTitle("Naziv dokumenta")
-                .setMessage("Da biste dodali dokument morate mu dati naziv.")
-                .setView(inputEditTextField)
-                .setPositiveButton("Postavi", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String documentName = inputEditTextField.getText().toString();
-                        if (documentName != null && !documentName.isEmpty())
-                            uploadSelectedFile(uri, documentName);
-                    }
-                })
-                .setNegativeButton("Odustani", null)
-                .setCancelable(false)
-                .create();
-        dialog.show();
+
+         Spinner inputSpinnerField = new Spinner(documentsFragment.getContext());
+
+         ArrayAdapter<DocumentType> adapter = new ArrayAdapter<>(documentsFragment.getContext(), android.R.layout.simple_spinner_item, validDocumentTypes);
+         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+         inputSpinnerField.setAdapter(adapter);
+
+         AlertDialog dialog = new AlertDialog.Builder(documentsFragment.getContext())
+                 .setTitle("Postavljanje dokumenta")
+                 .setMessage("Da biste dodali dokument morate da odababerte vrstu dokumenta")
+                 .setView(inputSpinnerField)
+                 .setPositiveButton("Postavi", new DialogInterface.OnClickListener() {
+                     @Override
+                     public void onClick(DialogInterface dialogInterface, int i) {
+                         DocumentType selectedItem = (DocumentType) inputSpinnerField.getSelectedItem();
+                         if (selectedItem != null) {
+                             // Do something with the selected item
+                             uploadSelectedFile(uri, selectedItem);
+                         }
+                         else
+                         {
+                             Toast.makeText(documentsFragment.getContext(), "Molimo vas odaberite vrstu dokumenta", Toast.LENGTH_LONG).show();
+
+                         }
+                     }
+                 })
+                 .setNegativeButton("Odustani", null)
+                 .setCancelable(false)
+                 .create();
+         dialog.show();
     }
 
-    private void uploadSelectedFile(Uri uri, String documentName) {
+    private void uploadSelectedFile(Uri uri, DocumentType documentType) {
 
         Handler handler = new Handler(handlerThread.getLooper());
         handler.post(() -> {
             try {
 
                 ByteBuffer buffer = uriToByteBuffer(uri);
-                if (documentsApiDecorator.uploadFile(buffer, documentName))
+                if (documentsApiDecorator.uploadFile(buffer, documentType))
+                {
                     fetchData();
+                    Toast.makeText(this.documentsFragment.getContext(), "Dokument je uspjesno postavljen", Toast.LENGTH_SHORT).show();
+                }
+
 
             } catch (JSONException e) {
+                Toast.makeText(this.documentsFragment.getContext(), "Greska pri postavljanju dokuemnta", Toast.LENGTH_SHORT).show();
 
             } catch (IOException e) {
-
+                Toast.makeText(this.documentsFragment.getContext(), "Greska pri postavljanju dokuemnta", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -125,12 +153,15 @@ public class DocumentsFragmentController extends AbstractViewController {
         handler.post(() -> {
 
             try {
-                userDataModel.updateUser(this.documentsApiDecorator.loadUser());
+                List<DocumentType> tempValidDocs = this.documentsApiDecorator.getValidDocumentType();
+                if(tempValidDocs!=null)
+                    this.validDocumentTypes = tempValidDocs;
+                userDataModel.updateUserDocuments(this.documentsApiDecorator.getUserDocuments());
                 setDataFromDataModel();
             } catch (IOException | JSONException e) {
             } finally {
                 if(documentsFragment.getActivity()!=null)
-                documentsFragment.getActivity().runOnUiThread(() -> displayDocumentsUi());
+                 documentsFragment.getActivity().runOnUiThread(() -> displayDocumentsUi());
             }
 
         });
@@ -138,49 +169,19 @@ public class DocumentsFragmentController extends AbstractViewController {
 
 
 
-    void setDataFromDataModel() {
-        User user = userDataModel.getUser();
-
-        if (user != null) {
-            this.documentNames.clear();
-            if (user.getDocumentName1() != null)
-                this.documentNames.add(user.getDocumentName1());
-            if (user.getDocumentName2() != null)
-                this.documentNames.add(user.getDocumentName2());
-            if (user.getDocumentName3() != null)
-                this.documentNames.add(user.getDocumentName3());
 
 
-        }
-    }
 
-    public void deleteDocument(String documentName) {
-        Handler handler = new Handler(handlerThread.getLooper());
-        setLoadingProgressUi();
-        handler.post(() -> {
 
-            try {
-                if (this.documentsApiDecorator.deleteDocument(documentName))
-                    fetchData();
-
-            } catch (JSONException | IOException e) {
-                if(documentsFragment.getActivity()!=null)
-                documentsFragment.getActivity().runOnUiThread(() -> setLoadingFinishedUi());
-            }
-
-        });
-
-    }
-
-    public void downloadDocument(String documentName) {
+    public void downloadDocument(Document document) {
 
         Handler handler = new Handler(handlerThread.getLooper());
         handler.post(() -> {
             try {
-                ResponseBody responseBody = documentsApiDecorator.downloadODocument(documentName);
+                ResponseBody responseBody = documentsApiDecorator.downloadODocument(document);
                 if (responseBody != null) {
                     File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                    File outPutFile = new File(downloadDir, documentName + ".pdf");
+                    File outPutFile = new File(downloadDir, document.getDocumentType().getName() + ".pdf");
                     FileOutputStream fileOutputStream = new FileOutputStream(outPutFile);
                     fileOutputStream.write(responseBody.bytes());
                 }
@@ -198,20 +199,17 @@ public class DocumentsFragmentController extends AbstractViewController {
     void displayDocumentsUi() {
         if (documentsFragment.viewCreated) {
             setLoadingFinishedUi();
-            if (documentNames.size() >= 3)
-                documentsFragment.uploadbtn.setVisibility(View.INVISIBLE);
-            else
-                documentsFragment.uploadbtn.setVisibility(View.VISIBLE);
-            if (this.documentNames.size() == 0)
+
+            if (this.userDocuments.size() == 0)
                 this.documentsFragment.documentsRv.setVisibility(View.INVISIBLE);
             else {
                 if (this.documentsFragment.documentsViewAdapter == null) {
-                    documentsFragment.documentsViewAdapter = new DocumentsViewAdapter(this.documentNames, this);
+                    documentsFragment.documentsViewAdapter = new DocumentsViewAdapter(this.userDocuments, this);
 
                     documentsFragment.documentsRv.setAdapter(documentsFragment.documentsViewAdapter);
                 } else {
 
-                    documentsFragment.documentsViewAdapter.setData(this.documentNames);
+                    documentsFragment.documentsViewAdapter.setData(this.userDocuments);
                     documentsFragment.documentsViewAdapter.notifyDataSetChanged();
 
                     if (documentsFragment.documentsRv.getAdapter() == null)
@@ -228,8 +226,23 @@ public class DocumentsFragmentController extends AbstractViewController {
     }
 
     private void setLoadingFinishedUi() {
-        if (documentsFragment.viewCreated)
+        if (documentsFragment.viewCreated) {
             documentsFragment.progressIndicator.setVisibility(View.INVISIBLE);
-            documentsFragment.swiperefreshDocuments.setRefreshing(false);
+            documentsFragment.swiperefreshDocuments.setRefreshing(false);}
+    }
+
+    void setDataFromDataModel() {
+        List<Document> userDocuments  = userDataModel.getUserDocuments();
+
+        if (userDocuments !=null) {
+            this.userDocuments.clear();
+            this.userDocuments.addAll(userDocuments);
+
+
+        }
+    }
+
+    public boolean chechData() {
+        return this.userDataModel.getUserDocuments()!=null&&this.userDataModel.getUserDocuments().size()!=0;
     }
 }

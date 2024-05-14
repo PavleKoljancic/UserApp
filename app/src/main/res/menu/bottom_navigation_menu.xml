@@ -1,15 +1,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/request"
+        android:id="@+id/interactions"
         android:enabled="true"
-        android:icon="@drawable/request"
-        android:title="Zahtjevi"/>
+        android:icon="@drawable/interactions"
+        android:title="Interakcije" />
     <item
         android:id="@+id/new_request"
         android:enabled="true"
         android:icon="@drawable/ticket"
-        android:title="Karate"/>
+        android:title="Karte" />
     <item
         android:id="@+id/profile"
         android:enabled="true"

@@ -10,8 +10,7 @@ import android.widget.Toast;
 import com.canhub.cropper.CropImageContractOptions;
 import com.example.userapp.activity.AbstractViewController;
 import com.example.userapp.activity.main.MainActivity;
-import com.example.userapp.models.TicketRequest;
-import com.example.userapp.models.TicketRequestResponse;
+import com.example.userapp.models.Document;
 import com.example.userapp.models.User;
 import com.example.userapp.models.UserTicket;
 import com.example.userapp.datamodel.user.UserDataChangeSubscriber;
@@ -21,6 +20,8 @@ import org.json.JSONException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
+
 class NoPictureController extends AbstractViewController implements UserDataChangeSubscriber {
 
      NoPictureActivity noPictureActivity;
@@ -67,7 +68,7 @@ class NoPictureController extends AbstractViewController implements UserDataChan
             try {
                  result = noPictureApiDecorator.uploadCurrentPicture();
                  if(result)
-                     this.userDataModel.updateUser(this.noPictureApiDecorator.loadUser());
+                     this.userDataModel.updateUser(this.noPictureApiDecorator.loadUser(),this.noPictureApiDecorator.loadUserKey());
             } catch (JSONException|IOException e) {
 
             }
@@ -95,7 +96,7 @@ class NoPictureController extends AbstractViewController implements UserDataChan
     }
 
     @Override
-    public void onUserDataChanged(User user, HashSet<UserTicket> userTickets, HashSet<TicketRequestResponse> ticketRequestResponses, HashSet<TicketRequest> unprocessedTicketRequest, Bitmap userProfilePicture) {
+    public void onUserDataChanged(User user, HashSet<UserTicket> userTickets, Bitmap userProfilePicture, List<Document> userDocuments) {
         if(user!=null&&user.getPictureHash()!=null) {
             this.userDataModel.unsubscribeToDataChange(this);
             if(!noPictureActivity.backprassed)

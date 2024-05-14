@@ -20,9 +20,8 @@ public class MainController {
 
         if (item.getItemId() == R.id.profile) {
             currentFragment = mainActivity.profileFragment;
-        } else if (item.getItemId() == R.id.request) {
-            currentFragment = mainActivity.requestsFragment;
-
+        } else if (item.getItemId() == R.id.interactions) {
+            currentFragment = mainActivity.interactionsFragment;
         } else if (item.getItemId() == R.id.new_request) {
             currentFragment = mainActivity.buyTicketFragment;
 
@@ -31,6 +30,6 @@ public class MainController {
         } else if (item.getItemId() == R.id.settings) {
                 currentFragment=mainActivity.settingsFragment;
         }
-        mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_view,currentFragment).commit();
+        mainActivity.getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(currentFragment.getId()+"").replace(R.id.fragment_container_view,currentFragment).commit();
     }
 }

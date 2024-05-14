@@ -1,7 +1,9 @@
 package com.example.userapp.datamodel.ticket;
 
+import com.example.userapp.datamodel.CacheLayer;
 import com.example.userapp.models.TicketType;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,6 +33,20 @@ public class TicketDataModel {
         if(newTickets!=null) {
             this.tickets.clear();
             this.tickets.addAll(newTickets);
+            CacheLayer cacheLayer = CacheLayer.getInstance();
+            cacheLayer.writeObject(this.tickets,"ticketTYPES");
+        }
+    }
+
+    public void loadFromFile()
+    {
+
+        CacheLayer cacheLayer = CacheLayer.getInstance();
+        List<TicketType> tempTickets = (List<TicketType>) cacheLayer.readObject("ticketTYPES");
+        if(tempTickets!=null)
+        {
+            this.tickets.clear();
+            this.tickets.addAll(tempTickets);
         }
     }
 }

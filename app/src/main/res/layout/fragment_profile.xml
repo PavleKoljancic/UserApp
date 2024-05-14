@@ -83,7 +83,8 @@
             android:id="@+id/noTicketsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Trenutno nemate ni jednu kartu da bi ste kupili karte izaberti opciju karte "
+            android:layout_marginTop="5dp"
+            android:text="Trenutno nemate nijednu kartu, da biste kupili karte izaberte opciju karte."
             android:textAlignment="center"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@+id/userTicketRV"
@@ -107,14 +108,44 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/userTicketRV"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="250dp"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="15dp"
-            android:orientation="horizontal"
+            android:fadeScrollbars="true"
+            android:foregroundGravity="center_horizontal"
+            android:orientation="vertical"
             android:visibility="invisible"
+            app:fastScrollEnabled="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView6" />
+            app:layout_constraintTop_toBottomOf="@+id/textView6">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <ImageView
+            android:id="@+id/qrdisplay"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/qrbutton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
+        <Button
+            android:id="@+id/qrbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:drawableLeft="@drawable/qr_code"
+            android:drawableTint="#FFFFFF"
+            android:text="QR"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </FrameLayout>

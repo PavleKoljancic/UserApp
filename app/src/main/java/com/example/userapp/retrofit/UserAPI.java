@@ -1,8 +1,11 @@
 package com.example.userapp.retrofit;
 
-import com.example.userapp.models.TicketRequest;
-import com.example.userapp.models.TicketRequestResponse;
+import com.example.userapp.models.Document;
+import com.example.userapp.models.DocumentType;
+import com.example.userapp.models.Route;
+import com.example.userapp.models.ScanInteraction;
 import com.example.userapp.models.TicketType;
+import com.example.userapp.models.Transaction;
 import com.example.userapp.models.User;
 
 import com.example.userapp.models.UserTicket;
@@ -51,18 +54,15 @@ public interface UserAPI {
     @GET("api/user/files/get/getNextPossibleChangeDate&userId={UserId}")
     Call<Date>  whenIsNextProfilePictureChangePossible(@Path("UserId") Integer userId,@Header("Authorization") String BarerToken);
     @Multipart
-    @POST("api/user/files/upload/document&userId={UserId}&DocumentName={DocumentName}")
+    @POST("api/user/files/upload/document&userId={UserId}&DocumentTypeId={DocumentTypeId}")
     Call<Boolean> uploadDocument(@Part MultipartBody.Part filePart,
-                                           @Path("UserId") Integer userId, @Path("DocumentName") String DocumentName,
+                                           @Path("UserId") Integer userId, @Path("DocumentTypeId") Integer DocumentName,
                                  @Header("Authorization") String BarerToken);
-    @GET("api/user/files/get/document&userId={UserId}&DocumentName={DocumentName}")
-    public Call<ResponseBody> getDocument(@Path("UserId") Integer userId, @Path("DocumentName") String DocumentName, @Header("Authorization") String BarerToken);
+    @GET("api/user/files/get/document&userId={UserId}&DocumentId={DocumentId}")
+    public Call<ResponseBody> getDocument(@Path("UserId") Integer userId, @Path("DocumentId") Integer DocumentId, @Header("Authorization") String BarerToken);
 
 
-    @GET("api/user/files/remove/document&userId={UserId}&DocumentName={DocumentName}")
-    public Call<Boolean> removeDocument(@Path("UserId") Integer userId,
-                                        @Path("DocumentName") String DocumentName,
-                                        @Header("Authorization") String BarerToken);
+
 
     //Tickets
     @GET("/api/tickets/getInUseTickets/pagesize={pagesize}size={size}")
@@ -72,19 +72,30 @@ public interface UserAPI {
 
     @POST("/api/users/getUserTickets")
     public Call<List<UserTicket>> getUserTickets(@Body User user, @Header("Authorization") String BarerToken);
-    @GET("/api/ticketRequests/getTicketRequestByUserId={userId}/pagesize={pagesize}size={size}")
-    public Call<List<TicketRequest>> getUnprocessTicketRequests(
-            @Path("userId") Integer userId, @Path("pagesize") Integer page,
-            @Path("size") Integer size, @Header("Authorization") String BarerToken);
 
-    @GET("/api/ticketRequests/getTicketResponseByUserId={userId}/pagesize={pagesize}size={size}")
-    public Call<List<TicketRequestResponse>> getTicketResponseByUserId(
-            @Path("userId") Integer userId, @Path("pagesize") Integer page,
-            @Path("size") Integer size, @Header("Authorization") String BarerToken);
-    @GET("/api/ticketRequests/addTicketRequest={ticketTypeId}&UserId={UserID}")
-    public Call<String> addTicketRequest(@Path("ticketTypeId") Integer ticketTypeId, @Path("UserID") Integer userId,@Header("Authorization") String BarerToken);
+
+    @GET("/api/ticketRequests/addTicketRequest={ticketTypeId}&UserId={UserID}&DocumentId={DocumentId}")
+    public Call<String> addTicketRequest(@Path("ticketTypeId") Integer ticketTypeId, @Path("UserID") Integer userId, @Path("DocumentId") Integer documentId,@Header("Authorization") String BarerToken);
 
     @GET("/api/tickets/getAllTickets/pagesize={pagesize}size={size}")
     public Call<List<TicketType>> getAllTicketTypes(@Path("pagesize") Integer pagesize, @Path("size") Integer size,@Header("Authorization") String BarerToken);
 
+    @GET("/api/users/getUserKeyById={Id}")
+    public  Call<String> getUserKey(@Path("Id") Integer Id,@Header("Authorization") String BarerToken);
+
+    @GET("/api/documents/validDocumentType")
+    public Call<List<DocumentType>> getValidDocumentTypes(@Header("Authorization") String BarerToken);
+    @GET("/api/documents/documents&userId={UserId}")
+    public Call<List<Document>> getUserDocuemnts(@Path("UserId") Integer Id,@Header("Authorization") String BarerToken);
+
+    //Transactions and Interactions
+
+    @GET("/api/terminals/ByUserIdGetScanInterractions={UserId}")
+    public Call<List<ScanInteraction>> getUserScanInteractions(@Path("UserId") Integer Id, @Header("Authorization") String BarerToken);
+
+    @GET("/api/routes/getAll")
+    public Call<List<Route>> getRoutes(@Header("Authorization") String BarerToken);
+
+    @GET("/api/transactions/getTransactionsForUser={UserId}")
+    public Call<List<Transaction>> getUserTransactions(@Path("UserId") Integer Id, @Header("Authorization") String BarerToken);
 }

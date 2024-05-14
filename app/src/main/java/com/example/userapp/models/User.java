@@ -1,5 +1,6 @@
 package com.example.userapp.models;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 
@@ -12,13 +13,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
-public class User {
+public class User implements Serializable {
 
     private Integer id;
     private String pictureHash;
-    private String documentName1;
-    private String documentName2;
-    private String documentName3;
     private String email;
     private String firstName;
     private String lastName;

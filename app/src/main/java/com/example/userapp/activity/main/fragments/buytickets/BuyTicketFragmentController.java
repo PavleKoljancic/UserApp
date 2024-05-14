@@ -8,12 +8,16 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.example.userapp.activity.AbstractViewController;
 import com.example.userapp.datamodel.ticket.TicketDataModel;
+import com.example.userapp.models.Document;
+import com.example.userapp.models.DocumentType;
 import com.example.userapp.models.TicketType;
 
 
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 public class BuyTicketFragmentController extends AbstractViewController {
 
@@ -37,19 +41,19 @@ public class BuyTicketFragmentController extends AbstractViewController {
 
                 try {
                     ticketDataModel.setTickets(ticketsApiDecorator.getTickets());
-                    if(buyTicketFragment.getActivity()!=null)
-                    buyTicketFragment.getActivity().runOnUiThread(() -> displayTicketsUi());
+                    if (buyTicketFragment.getActivity() != null)
+                        buyTicketFragment.getActivity().runOnUiThread(() -> displayTicketsUi());
 
                 } catch (IOException e) {
-                    if(buyTicketFragment.getActivity()!=null)
-                    buyTicketFragment.getActivity().runOnUiThread(() -> {
-                        setInfoTextUi("Desila se greška pri dobijanju podataka");
-                    });
+                    if (buyTicketFragment.getActivity() != null)
+                        buyTicketFragment.getActivity().runOnUiThread(() -> {
+                            setInfoTextUi("Desila se greška pri dobijanju podataka");
+                        });
                 } finally {
-                    if(buyTicketFragment.getActivity()!=null)
-                    buyTicketFragment.getActivity().runOnUiThread(() -> {
-                        setNotLoadingUi();
-                    });
+                    if (buyTicketFragment.getActivity() != null)
+                        buyTicketFragment.getActivity().runOnUiThread(() -> {
+                            setNotLoadingUi();
+                        });
 
                 }
 
@@ -58,7 +62,7 @@ public class BuyTicketFragmentController extends AbstractViewController {
     }
 
 
-    private void sendRequestForTicket(TicketType ticketType) {
+    private void sendRequestForTicket(TicketType ticketType, Document document) {
         if (buyTicketFragment.viewCreated) {
 
             setInfoTextUi("Slanje zahtjeva za kartu");
@@ -69,23 +73,25 @@ public class BuyTicketFragmentController extends AbstractViewController {
 
 
                 try {
-                    String response = ticketsApiDecorator.sendTicketRequest(ticketType);
-                    if(buyTicketFragment.getActivity()!=null)
-                    buyTicketFragment.getActivity().runOnUiThread(() -> {
-                        if ("Insufficient funds".equals(response))
-                            setInfoTextUi("Nedovoljno kredita.");
-                        else if ("Requested Ticket not inUse".equals(response))
-                            setInfoTextUi("Zahtjevana karta nije dostupna.");
-                        else if ("Successfully added request".equals(response))
-                            setInfoTextUi("Zahtjev za kartu je poslat na obradu.");
-                        else if ("Ticked Request Processed and Ticket bought".equals(response))
-                            setInfoTextUi("Karta kupljena.");
-                        else
-                            setInfoTextUi("Desila se neočekivana greška!");
+                    String response = ticketsApiDecorator.sendTicketRequest(ticketType, document);
+                    if (buyTicketFragment.getActivity() != null)
+                        buyTicketFragment.getActivity().runOnUiThread(() -> {
+                            if ("Insufficient funds".equals(response))
+                                setInfoTextUi("Nedovoljno kredita.");
+                            else if ("Requested Ticket not inUse".equals(response))
+                                setInfoTextUi("Zahtjevana karta nije dostupna.");
+                            else if ("Successfully added request".equals(response))
+                                setInfoTextUi("Zahtjev za kartu je poslat na obradu.");
+                            else if ("Ticked Request Processed and Ticket bought".equals(response))
+                                setInfoTextUi("Karta kupljena.");
+                            else
+                                setInfoTextUi("Desila se neočekivana greška!");
 
-                    });
+                        });
                 } catch (JSONException | IOException e) {
-                    setInfoTextUi("Desila se greška pri slanju zahtjeva.");
+                    if (buyTicketFragment.getActivity() != null)
+                        buyTicketFragment.getActivity().runOnUiThread(() -> {
+                    setInfoTextUi("Desila se greška pri slanju zahtjeva.");});
                 } finally {
                     if (buyTicketFragment.getActivity() != null)
                         buyTicketFragment.getActivity().runOnUiThread(() ->
@@ -98,7 +104,7 @@ public class BuyTicketFragmentController extends AbstractViewController {
         }
     }
 
-    private void onClickInner(TicketType ticketType) {
+    private void onClickInner(TicketType ticketType, Document document) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(buyTicketFragment.getActivity());
 
@@ -112,7 +118,7 @@ public class BuyTicketFragmentController extends AbstractViewController {
         });
         builder.setNegativeButton("Da", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                sendRequestForTicket(ticketType);
+                sendRequestForTicket(ticketType,document);
             }
         });
 
@@ -149,8 +155,22 @@ public class BuyTicketFragmentController extends AbstractViewController {
                 buyTicketFragment.ticketsViewAdapter.setOnClickListener(new TicketsViewAdapter.OnClickListener() {
                     @Override
                     public void onClick(TicketType ticketType) {
+                        if(ticketType.getNeedsDocumentaion()) {
+                            List<Document> documents = userDataModel.getUserDocuments();
+                            Optional<Document> optional = documents.stream().filter(
+                                    (Document userDocument) ->
+                                            ticketType.getDocuments().stream().anyMatch(
 
-                        onClickInner(ticketType);
+                                                    (DocumentType accaptableDocumentType) ->
+                                                            accaptableDocumentType.getId() == userDocument.getDocumentType().getId()&&userDocument.getApproved()
+
+                                            )).findAny();
+                            if (optional.isPresent())
+                                onClickInner(ticketType, optional.get());
+                            else
+                                buyTicketFragment.infoText.setText("Nemate odobren dokuemnt za ovu kartu.");
+                        }
+                        else onClickInner(ticketType, null);
 
 
                     }
@@ -163,5 +183,9 @@ public class BuyTicketFragmentController extends AbstractViewController {
                     buyTicketFragment.recyclerView.setAdapter(buyTicketFragment.ticketsViewAdapter);
             }
         }
+    }
+
+    public boolean checkData() {
+        return this.ticketDataModel.getTickets()!=null&&this.ticketDataModel.getTickets().size()!=0;
     }
 }

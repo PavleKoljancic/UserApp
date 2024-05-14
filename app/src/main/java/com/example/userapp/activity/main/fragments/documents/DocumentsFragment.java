@@ -36,7 +36,7 @@ public class DocumentsFragment extends Fragment {
 
     public DocumentsFragment() {
         this.documentsFragmentController = new DocumentsFragmentController(this);
-        this.dataFetched = false;
+        this.dataFetched = this.documentsFragmentController.chechData();
         this.documentsViewAdapter = null;
         viewCreated = false;
     }

@@ -1,6 +1,8 @@
 package com.example.userapp.models;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 
 import lombok.EqualsAndHashCode;
@@ -14,7 +16,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 
 
-public class TicketType {
+public class TicketType implements Serializable {
 
     private String type;
     Integer validFor;
@@ -22,7 +24,8 @@ public class TicketType {
     private Integer id;
     private String name;
     private BigDecimal cost;
-    private String documentaionName;
     private Boolean needsDocumentaion;
     private Boolean inUse;
+
+    private List<DocumentType> documents ;
 }

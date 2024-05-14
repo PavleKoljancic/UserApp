@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.userapp.R;
+import com.example.userapp.datamodel.CacheLayer;
 import com.example.userapp.token.TokenManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
@@ -29,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CacheLayer.createCacheLayer(getCacheDir());
         setContentView(R.layout.activity_login);
         try {
             TokenManager.setToken(null);
@@ -45,6 +47,12 @@ public class LoginActivity extends AppCompatActivity {
          registerBtn = findViewById(R.id.Potvrdi);
 
         loginController = new LoginController(this);
+        Thread bgThread = new Thread(()-> {
+
+            loginController.loadCacheIfPresent();
+
+        });
+        bgThread.start();
          loginBtn.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View view) {

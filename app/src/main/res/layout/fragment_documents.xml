@@ -55,32 +55,24 @@
                 android:textSize="40dp" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="5dp"
-            android:text="Na vaš profil možete postaviti do tri dokumenta."
-            android:textAlignment="center"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/documentsRV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="500dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="60dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="5dp"
+
+            android:fadingEdge="vertical"
+            android:fadingEdgeLength="20dp"
+            android:isScrollContainer="true"
             android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/addDocument"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
         <Button
             android:id="@+id/addDocument"
@@ -88,8 +80,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:backgroundTint="#1E88E5"
-            android:text="Dodaj dokumnet"
-            app:icon="@drawable/document"
+            android:text="Dokument"
+            android:visibility="visible"
+            app:icon="@drawable/folder"
             app:iconGravity="end"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

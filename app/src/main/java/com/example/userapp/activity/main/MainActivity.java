@@ -12,9 +12,9 @@ import android.view.MenuItem;
 import com.example.userapp.R;
 import com.example.userapp.activity.main.fragments.buytickets.BuyTicketFragment;
 import com.example.userapp.activity.main.fragments.documents.DocumentsFragment;
+import com.example.userapp.activity.main.fragments.interactions.InteractionsFragment;
 import com.example.userapp.activity.main.fragments.profile.ProfileFragment;
 import com.example.userapp.activity.main.fragments.settings.SettingsFragment;
-import com.example.userapp.activity.main.fragments.ticketrequests.RequestsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -25,18 +25,20 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     MainController mainController;
     FragmentManager fragmentManager;
-    RequestsFragment requestsFragment;
     DocumentsFragment documentsFragment;
     SettingsFragment settingsFragment;
+
+    InteractionsFragment interactionsFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         profileFragment = new ProfileFragment();
         buyTicketFragment = new BuyTicketFragment();
-        requestsFragment = new RequestsFragment();
         documentsFragment = new DocumentsFragment();
         settingsFragment = new SettingsFragment();
+        interactionsFragment = new InteractionsFragment();
+
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.profile);
         fragmentManager = getSupportFragmentManager();
@@ -60,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         profileFragment.quitHandlerThread();
         buyTicketFragment.quitHandlerThread();
-        requestsFragment.quitHandlerThread();
         documentsFragment.quitHandlerThread();
+        interactionsFragment.quitHandlerThread();
         super.onDestroy();
     }
 

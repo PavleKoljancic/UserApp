@@ -1,6 +1,7 @@
 package com.example.userapp.activity.main.fragments.buytickets;
 
 import com.example.userapp.activity.UserApiDecorator;
+import com.example.userapp.models.Document;
 import com.example.userapp.models.TicketType;
 import com.example.userapp.token.TokenManager;
 
@@ -15,8 +16,11 @@ public class TicketsApiDecorator extends UserApiDecorator {
         return  api.getTicketsInUse(0, 1000, TokenManager.bearer() + TokenManager.getInstance().getToken()).execute().body();
     }
 
-    String sendTicketRequest(TicketType ticketType) throws JSONException, IOException {
-        return  api.addTicketRequest(ticketType.getId(), TokenManager.getInstance().getId(), TokenManager.bearer() + TokenManager.getInstance().getToken()).execute().body();
+    String sendTicketRequest(TicketType ticketType, Document document) throws JSONException, IOException {
+        Integer docId =0;
+        if(document!=null)
+            docId = document.getId();
+        return  api.addTicketRequest(ticketType.getId(), TokenManager.getInstance().getId(), docId,TokenManager.bearer() + TokenManager.getInstance().getToken()).execute().body();
     }
 
 
